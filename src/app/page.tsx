@@ -1,102 +1,86 @@
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+// Las carpetas (secciones) que tendrá el CRM. Se irán activando fase por fase.
+const carpetas = [
+  { nombre: "Clientes", detalle: "Datos, fotos, RUT y Cámara de Comercio" },
+  { nombre: "Agenda", detalle: "Citas y seguimiento de cada cliente" },
+  { nombre: "Catálogo", detalle: "Plumillas, llantas y baterías" },
+  { nombre: "Pedidos", detalle: "De borrador a enviado y completado" },
+];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+// Dibujo de una carpeta roja: pestaña en rojo oscuro atrás y el frente en rojo.
+function CarpetaRoja() {
+  return (
+    <svg viewBox="0 0 48 40" className="h-10 w-12" aria-hidden="true">
+      <path
+        className="fill-brand-dark"
+        d="M4 2h13.2a3 3 0 0 1 2.4 1.2L22 6.5h22a4 4 0 0 1 4 4V36a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+      />
+      <path
+        className="fill-brand"
+        d="M0 15a4 4 0 0 1 4-4h40a4 4 0 0 1 4 4v21a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4z"
+      />
+    </svg>
+  );
+}
+
+export default function Inicio() {
+  return (
+    <div className="flex min-h-dvh flex-col">
+      <header className="border-b border-line">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3 sm:px-6">
+          <Image
+            src="/brand/logo-three-lions.png"
+            alt=""
+            width={44}
+            height={44}
+            priority
+            className="rounded-full"
+          />
+          <p className="font-display text-lg font-semibold tracking-[0.12em]">
+            THREE LIONS <span className="text-sm text-ink-soft">SAS</span>
+          </p>
         </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-6 sm:py-16">
+        <p className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-sm font-medium text-brand">
+          <span className="size-2 rounded-full bg-brand" aria-hidden="true" />
+          En construcción
+        </p>
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+          CRM Three Lions
+        </h1>
+        <p className="mt-3 max-w-xl text-base text-ink-soft sm:text-lg">
+          Aquí tu equipo de ventas va a manejar clientes, citas, catálogo y
+          pedidos. Estas son las carpetas que vamos a construir:
+        </p>
+
+        <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {carpetas.map((carpeta) => (
+            <li
+              key={carpeta.nombre}
+              className="flex flex-col gap-3 rounded-xl border border-line p-4 sm:p-5"
+            >
+              <CarpetaRoja />
+              <div>
+                <h2 className="text-base font-semibold sm:text-lg">
+                  {carpeta.nombre}
+                </h2>
+                <p className="mt-1 text-sm text-ink-soft">{carpeta.detalle}</p>
+              </div>
+              <p className="mt-auto text-xs font-medium tracking-wider text-ink-soft uppercase">
+                Próximamente
+              </p>
+            </li>
+          ))}
+        </ul>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="border-t border-line">
+        <p className="mx-auto max-w-5xl px-4 py-4 text-sm text-ink-soft sm:px-6">
+          Three Lions SAS · Shaping the future
+        </p>
       </footer>
     </div>
   );

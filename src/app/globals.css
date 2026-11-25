@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Colores del CRM Three Lions (elegidos por el dueño):
+  fondo blanco, letras negras y carpetas rojas.
+  El logo conserva sus colores originales (azul marino y dorado).
+*/
+@theme {
+  --color-paper: #ffffff; /* fondo blanco */
+  --color-ink: #111111; /* letras negras */
+  --color-ink-soft: #57534e; /* texto secundario, gris oscuro */
+  --color-line: #e7e5e4; /* bordes y separadores suaves */
+  --color-brand: #c8102e; /* rojo de las carpetas y botones */
+  --color-brand-dark: #9b0c22; /* rojo oscuro: pestaña de la carpeta, botón presionado */
+  --color-brand-soft: #fdeef0; /* rojo muy claro: fondos de avisos */
 }
 
+/* Letras: Inter para todo el CRM; Cinzel (estilo del logo) solo para la marca */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cinzel), "Times New Roman", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* El CRM siempre se ve con fondo blanco, aunque el celular esté en modo oscuro */
+:root {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
