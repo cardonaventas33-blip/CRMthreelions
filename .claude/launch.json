@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "crm",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "C:/Users/cardo/OneDrive/Documentos/Proyectos/crm-three-lions"],
+      "port": 3000
+    }
+  ]
+}
