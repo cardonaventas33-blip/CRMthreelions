@@ -23,7 +23,6 @@
 
 ## Pendiente de tu parte
 - Crear cuentas en GitHub, Vercel y Supabase (pasos exactos en el chat).
-- Confirmar qué son las "carpetas rojas": por ahora son los íconos de carpeta de cada sección.
 
 ## Decisiones tomadas
 - Carpeta del proyecto: `Documentos\Proyectos\crm-three-lions` (tu carpeta habitual de proyectos).
@@ -34,6 +33,7 @@
   - Rojo `#c8102e` · Rojo oscuro `#9b0c22` · Rojo muy claro `#fdeef0`
   - En el código se usan así: `bg-paper`, `text-ink`, `text-ink-soft`, `border-line`, `bg-brand`, `bg-brand-dark`, `bg-brand-soft`.
 - El CRM siempre se ve con fondo blanco, aunque el celular esté en modo oscuro.
+- Las "carpetas rojas" son el ícono de carpeta roja de cada sección del CRM (Clientes, Agenda, Catálogo, Pedidos). Confirmado por el dueño el 24-nov-2026.
 - Letras: Inter para todo el CRM; Cinzel (parecida a la del logo) solo para el nombre "THREE LIONS".
 
 ## Limpieza pendiente (con tu permiso)
