@@ -7,11 +7,22 @@ const RUTAS_PUBLICAS = ["/login"];
 // Se ejecuta antes de cada página: renueva la sesión y manda a "/login"
 // a quien no ha iniciado sesión.
 export async function middleware(request: NextRequest) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const clavePublica = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  // Si faltan las claves (por ejemplo, en Vercel), se avisa claro en vez de fallar
+  if (!url || !clavePublica) {
+    return new NextResponse(
+      "Falta configurar las claves de Supabase (NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY).",
+      { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } },
+    );
+  }
+
   let respuesta = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    url,
+    clavePublica,
     {
       cookies: {
         getAll() {
