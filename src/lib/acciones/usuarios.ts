@@ -40,7 +40,8 @@ export async function crearUsuario(_antes: EstadoAccion, datos: FormData): Promi
   });
   if (!r.success) return { error: r.error.issues[0]?.message ?? "Revisa los datos." };
 
-  const { error } = await crearClienteAdmin().auth.admin.createUser({
+  const admin = crearClienteAdmin();
+  const { data: creado, error } = await admin.auth.admin.createUser({
     email: r.data.correo,
     password: r.data.contrasena,
     email_confirm: true,
@@ -53,6 +54,17 @@ export async function crearUsuario(_antes: EstadoAccion, datos: FormData): Promi
     }
     if (error.code === "email_exists") return { error: "Ya existe un usuario con ese correo." };
     return { error: "No se pudo crear el usuario. Intenta de nuevo." };
+  }
+
+  // El perfil nace "pendiente" (sin acceso): Supabase guarda el rol un instante
+  // después de crear el usuario. Por eso el rol elegido se pone aquí, aparte.
+  const { error: errorRol } = await admin
+    .from("profiles")
+    .update({ role: r.data.rol, name: r.data.nombre })
+    .eq("id", creado.user.id);
+  if (errorRol) {
+    revalidatePath("/usuarios");
+    return { error: "Se creó la cuenta, pero no se pudo asignar el rol. Cámbialo en la lista." };
   }
 
   revalidatePath("/usuarios");
