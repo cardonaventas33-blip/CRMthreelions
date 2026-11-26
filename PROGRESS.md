@@ -22,13 +22,16 @@ Además se adelantaron arreglos de diseño pedidos por el dueño (menú lateral 
 - [x] **Agenda con calendario de lunes a sábado, sin domingos** (26-nov-2026): mes visible, flechas, botón "Hoy",
   y al tocar un día se ve su espacio de citas (las citas llegan en la Fase 4). Código: `src/components/calendario.tsx`.
 - [x] Carpeta `fotos-catalogo/` (plumillas, llantas, baterias) con instrucciones en `LEEME.txt`. No se sube a GitHub.
+- [x] Las 5 fotos de plumillas copiadas a `fotos-catalogo/plumillas/` con su nombre (los originales siguen en Descargas).
 
 ## Falta en la Fase 0
-- [ ] Pegar las 3 claves de Supabase en `.env.local` (las pega el dueño) y comprobarlas con `npm run verificar:supabase`.
+- [ ] Guardar las 3 claves de Supabase y comprobarlas. La forma más fácil:
+  `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\guardar-claves.ps1`
+  (pide cada clave sin mostrarla, la guarda en `.env.local` y la comprueba). Para revisar después: `npm run verificar:supabase`.
 
 ## Pendiente de tu parte
-- Pegar las claves de Supabase en `.env.local` y guardar con Ctrl + S.
-- Copiar las fotos originales de los productos a `fotos-catalogo/` (en el chat mostraste 5 de plumillas, pero hacen falta los archivos).
+- Pegar las 3 claves de Supabase cuando el programa `guardar-claves` las pida (Project URL, Publishable key, Secret key).
+- Más adelante: fotos de llantas y baterías en sus carpetas de `fotos-catalogo/`.
 
 ## Decisiones tomadas
 - Carpeta del proyecto: `Documentos\Proyectos\crm-three-lions`. Repositorio en GitHub: `CRMthreelions` (cuenta cardonaventas33-blip). Rama principal: `main`.
