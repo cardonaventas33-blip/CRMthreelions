@@ -1,7 +1,16 @@
-# Guarda las 3 claves de Supabase en .env.local SIN mostrarlas en pantalla.
-# Uso (en PowerShell): powershell -NoProfile -ExecutionPolicy Bypass -File scripts\guardar-claves.ps1
+# Guarda las claves de Supabase en .env.local. Solo pide las que faltan.
+# La Secret key se escribe sin mostrarse en pantalla.
+# Uso: powershell -NoProfile -ExecutionPolicy Bypass -File scripts\guardar-claves.ps1
 $ErrorActionPreference = 'Stop'
 $archivo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\.env.local'))
+
+# Lo que ya esta guardado
+$actual = @{}
+if (Test-Path -LiteralPath $archivo) {
+  foreach ($linea in Get-Content -LiteralPath $archivo) {
+    if ($linea -match '^\s*([A-Z_]+)\s*=\s*(.*)$') { $actual[$Matches[1]] = $Matches[2].Trim() }
+  }
+}
 
 function Read-Oculto([string]$mensaje) {
   $seguro = Read-Host -Prompt $mensaje -AsSecureString
@@ -11,14 +20,25 @@ function Read-Oculto([string]$mensaje) {
 }
 
 Write-Host ''
-Write-Host 'Vamos a guardar las 3 claves de Supabase.' -ForegroundColor Cyan
-Write-Host 'Lo que pegues NO se ve en pantalla (solo salen asteriscos). Es normal.' -ForegroundColor Cyan
-Write-Host 'Para pegar: Ctrl + V o clic derecho. Despues presiona Enter.' -ForegroundColor Cyan
+Write-Host '=== Claves de Supabase para el CRM Three Lions ===' -ForegroundColor Cyan
+Write-Host 'Para pegar: clic derecho o Ctrl + V. Despues presiona Enter.' -ForegroundColor Cyan
 Write-Host ''
 
-$url = Read-Oculto '1 de 3 - Pega la Project URL (https://...supabase.co)'
-$pub = Read-Oculto '2 de 3 - Pega la Publishable key (sb_publishable_...)'
-$sec = Read-Oculto '3 de 3 - Pega la Secret key (sb_secret_...)'
+$url = $actual['NEXT_PUBLIC_SUPABASE_URL']
+if ($url) { Write-Host 'Project URL: ya estaba guardada.' -ForegroundColor Green }
+else { $url = (Read-Host -Prompt 'Pega la Project URL (empieza por https:// y termina en .supabase.co)').Trim() }
+
+$pub = $actual['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY']
+if ($pub) { Write-Host 'Publishable key: ya estaba guardada.' -ForegroundColor Green }
+else { $pub = (Read-Host -Prompt 'Pega la Publishable key (empieza por sb_publishable_)').Trim() }
+
+$sec = $actual['SUPABASE_SECRET_KEY']
+if ($sec) { Write-Host 'Secret key: ya estaba guardada.' -ForegroundColor Green }
+else {
+  Write-Host ''
+  Write-Host 'La Secret key NO se ve al pegarla (solo salen asteriscos). Es normal.' -ForegroundColor Yellow
+  $sec = Read-Oculto 'Pega la Secret key (empieza por sb_secret_)'
+}
 
 $contenido = @"
 # ============================================================
@@ -45,3 +65,4 @@ Write-Host ''
 & node (Join-Path $PSScriptRoot 'verificar-supabase.mjs') $archivo
 Write-Host ''
 Write-Host 'Listo. Ya puedes volver al chat.' -ForegroundColor Green
+Read-Host -Prompt 'Presiona Enter para cerrar esta ventana' | Out-Null

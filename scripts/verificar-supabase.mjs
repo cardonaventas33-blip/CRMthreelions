@@ -57,24 +57,32 @@ linea(
 if (sec.startsWith("sb_publishable_"))
   console.log("    OJO: aqui quedo la clave PUBLICABLE; esta casilla es para la secreta.");
 
-if (!todoBien) {
-  console.log("\nHay algo por corregir antes de probar la conexion.");
-  process.exit(1);
-}
-
 const base = url.replace(/\/$/, "");
 const cabeceras = (k) =>
   k.startsWith("eyJ") ? { apikey: k, Authorization: `Bearer ${k}` } : { apikey: k };
 
 // Prueba 1: la clave publicable puede hablar con Supabase
-const r1 = await fetch(`${base}/auth/v1/settings`, { headers: cabeceras(pub) });
-linea("Prueba de conexion con la clave publicable", r1.ok, `Supabase respondio ${r1.status}`);
+if (urlOk && pubOk) {
+  try {
+    const r1 = await fetch(`${base}/auth/v1/settings`, { headers: cabeceras(pub) });
+    linea("Prueba de conexion con la clave publicable", r1.ok, `Supabase respondio ${r1.status}`);
+  } catch {
+    linea("Prueba de conexion con la clave publicable", false, "no se pudo conectar (revisa la direccion)");
+  }
+}
 
 // Prueba 2: la clave secreta tiene permisos de administrador
-const r2 = await fetch(`${base}/auth/v1/admin/users?page=1&per_page=1`, {
-  headers: cabeceras(sec),
-});
-linea("Prueba de permisos con la clave secreta", r2.ok, `Supabase respondio ${r2.status}`);
+if (urlOk && secOk) {
+  try {
+    const r2 = await fetch(`${base}/auth/v1/admin/users?page=1&per_page=1`, {
+      headers: cabeceras(sec),
+    });
+    linea("Prueba de permisos con la clave secreta", r2.ok, `Supabase respondio ${r2.status}`);
+  } catch {
+    linea("Prueba de permisos con la clave secreta", false, "no se pudo conectar (revisa la direccion)");
+  }
+}
 
 console.log(todoBien ? "\nTodo bien: las tres claves funcionan." : "\nHay algo por corregir (lineas con XX).");
-process.exit(todoBien ? 0 : 1);
+// Se termina sin cortar de golpe las conexiones (evita un error de Node en Windows)
+process.exitCode = todoBien ? 0 : 1;
