@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# fotos del catalogo: pesan mucho para GitHub. Quedan en OneDrive
+# y en la Fase 3 se cargan al catalogo (Supabase Storage)
+/fotos-catalogo/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
