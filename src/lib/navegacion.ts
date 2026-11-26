@@ -83,6 +83,7 @@ export const grupos: GrupoMenu[] = [
         descripcion:
           "Quién entra al CRM y con qué permisos: vendedor o administrador.",
         soloAdmin: true,
+        paginaPropia: true,
       },
       {
         slug: "configuracion",

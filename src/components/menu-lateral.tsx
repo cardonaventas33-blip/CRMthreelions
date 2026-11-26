@@ -4,10 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { ChevronDown, UserRound, X } from "lucide-react";
+import { ChevronDown, LogOut, X } from "lucide-react";
+import { cerrarSesion } from "@/lib/acciones/sesion";
 import { grupos, inicio } from "@/lib/navegacion";
+import { iniciales, NOMBRE_ROL, type UsuarioVisible } from "@/lib/roles";
 
 type Props = {
+  usuario: UsuarioVisible;
   /** Cierra el menú en el celular (al tocar un enlace o la X). */
   onCerrar?: () => void;
 };
@@ -19,12 +22,20 @@ function claseEnlace(activo: boolean) {
   }`;
 }
 
-export function MenuLateral({ onCerrar }: Props) {
+export function MenuLateral({ usuario, onCerrar }: Props) {
   const ruta = usePathname();
   const [cerrados, setCerrados] = useState<Record<string, boolean>>({});
 
   const estaActiva = (href: string) =>
     href === "/" ? ruta === "/" : ruta === href || ruta.startsWith(`${href}/`);
+
+  // Las opciones de administración solo las ve el administrador
+  const gruposVisibles = grupos
+    .map((grupo) => ({
+      ...grupo,
+      secciones: grupo.secciones.filter((s) => !s.soloAdmin || usuario.rol === "admin"),
+    }))
+    .filter((grupo) => grupo.secciones.length > 0);
 
   return (
     <div className="flex h-full flex-col">
@@ -38,9 +49,7 @@ export function MenuLateral({ onCerrar }: Props) {
           className="rounded-full"
         />
         <div className="min-w-0 flex-1">
-          <p className="font-display text-base font-semibold tracking-[0.1em]">
-            THREE LIONS
-          </p>
+          <p className="font-display text-base font-semibold tracking-[0.1em]">THREE LIONS</p>
           <p className="text-sm text-ink-soft">CRM comercial</p>
         </div>
         {onCerrar && (
@@ -55,18 +64,25 @@ export function MenuLateral({ onCerrar }: Props) {
         )}
       </div>
 
-      {/* Quién usa el CRM: se llena cuando exista el inicio de sesión (Fase 1) */}
-      <div className="flex items-center gap-3 border-b border-line px-4 py-4">
-        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-mist text-ink-soft">
-          <UserRound className="size-5" aria-hidden />
+      {/* Quién está usando el CRM (abre "Mi cuenta") */}
+      <Link
+        href="/cuenta"
+        onClick={onCerrar}
+        aria-current={estaActiva("/cuenta") ? "page" : undefined}
+        className={`flex items-center gap-3 border-b border-line px-4 py-4 transition-colors hover:bg-mist ${
+          estaActiva("/cuenta") ? "bg-mist" : ""
+        }`}
+      >
+        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand">
+          {iniciales(usuario)}
         </span>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold">Sin iniciar sesión</p>
-          <p className="text-xs text-ink-soft">
-            El acceso con usuario llega en la Fase 1
-          </p>
-        </div>
-      </div>
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold">
+            {usuario.nombre || usuario.correo}
+          </span>
+          <span className="block text-xs text-ink-soft">{NOMBRE_ROL[usuario.rol]} · Mi cuenta</span>
+        </span>
+      </Link>
 
       {/* Opciones del menú */}
       <nav aria-label="Menú principal" className="flex-1 overflow-y-auto px-3 py-4">
@@ -80,7 +96,7 @@ export function MenuLateral({ onCerrar }: Props) {
           {inicio.nombre}
         </Link>
 
-        {grupos.map((grupo, i) => {
+        {gruposVisibles.map((grupo, i) => {
           const cerrado = cerrados[grupo.titulo] ?? false;
           const idLista = `grupo-menu-${i}`;
           return (
@@ -131,9 +147,18 @@ export function MenuLateral({ onCerrar }: Props) {
         })}
       </nav>
 
-      <p className="border-t border-line px-4 py-3 text-xs text-ink-soft">
-        Three Lions SAS · Shaping the future
-      </p>
+      <div className="border-t border-line px-3 py-3">
+        <form action={cerrarSesion}>
+          <button
+            type="submit"
+            className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-[15px] text-ink transition-colors hover:bg-mist"
+          >
+            <LogOut className="size-5 shrink-0" aria-hidden />
+            Cerrar sesión
+          </button>
+        </form>
+        <p className="px-3 pt-2 text-xs text-ink-soft">Three Lions SAS · Shaping the future</p>
+      </div>
     </div>
   );
 }

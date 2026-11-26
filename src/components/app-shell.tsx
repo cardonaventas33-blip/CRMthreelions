@@ -4,10 +4,17 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "lucide-react";
 import { MenuLateral } from "@/components/menu-lateral";
+import type { UsuarioVisible } from "@/lib/roles";
 
 // Marco de la app: menú fijo a la izquierda en el computador,
 // y en el celular una barra arriba con un botón que abre el menú.
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  usuario,
+  children,
+}: {
+  usuario: UsuarioVisible;
+  children: React.ReactNode;
+}) {
   const [abierto, setAbierto] = useState(false);
   const botonMenu = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -38,7 +45,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-dvh">
       {/* Computador: menú fijo a la izquierda */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-line bg-paper lg:block">
-        <MenuLateral />
+        <MenuLateral usuario={usuario} />
       </aside>
 
       {/* Celular: barra de arriba con el botón del menú */}
@@ -88,7 +95,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             abierto ? "translate-x-0 shadow-xl" : "-translate-x-full"
           }`}
         >
-          <MenuLateral onCerrar={cerrar} />
+          <MenuLateral usuario={usuario} onCerrar={cerrar} />
         </div>
       </div>
 

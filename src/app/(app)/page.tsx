@@ -1,4 +1,5 @@
 import { CalendarDays, ClipboardList, Users } from "lucide-react";
+import { obtenerUsuarioActual } from "@/lib/sesion";
 
 // Lo que mostrará el tablero cuando cada parte esté construida
 const resumen = [
@@ -22,7 +23,10 @@ const resumen = [
   },
 ];
 
-export default function Inicio() {
+export default async function Inicio() {
+  const usuario = await obtenerUsuarioActual();
+  const primerNombre = usuario?.nombre.trim().split(/\s+/)[0];
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       <p className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-sm font-medium text-brand">
@@ -30,7 +34,7 @@ export default function Inicio() {
         En construcción
       </p>
       <h1 className="mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-        Inicio
+        {primerNombre ? `Hola, ${primerNombre}` : "Inicio"}
       </h1>
       <p className="mt-3 max-w-xl text-base text-ink-soft sm:text-lg">
         Este será tu tablero: de un vistazo verás tus citas, tus clientes y tus
