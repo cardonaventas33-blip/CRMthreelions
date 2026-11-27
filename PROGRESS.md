@@ -3,8 +3,8 @@
 > Si en otra sesión escribes "continúa", Claude lee este archivo y `docs/PLANO.md` y sigue desde aquí.
 
 ## Fase actual
-**Fase 1: Autenticación y estructura de datos — casi terminada (26-nov-2026).**
-Falta comprobar la página publicada en Vercel ya con las claves de Supabase.
+**Fase 1: Autenticación y estructura de datos — TERMINADA (26-nov-2026).**
+El dueño entró con su usuario administrador en la página publicada (https://cr-mthreelions.vercel.app).
 Siguiente: **Fase 2: Clientes y documentos**. Espera el "sigue" del dueño.
 
 ## Hecho en la Fase 1
@@ -24,8 +24,13 @@ Siguiente: **Fase 2: Clientes y documentos**. Espera el "sigue" del dueño.
 - [x] Registro abierto apagado en Supabase: solo el administrador crea cuentas.
 - [x] Las 3 claves agregadas en Vercel (Settings → Environment Variables), para todos los entornos.
 
-## Falta en la Fase 1
-- [ ] Comprobar que la página publicada funciona con las claves de Vercel (entrar con el usuario administrador).
+- [x] Página publicada funcionando con las claves de Vercel: el dueño entró con su usuario administrador.
+
+## Lo que viene en la Fase 2 (según el plano)
+- Crear y editar clientes (nombre, NIT/RUT, contacto, teléfono, correo, dirección, notas), con validación en el servidor.
+- Subir la foto del cliente y sus documentos (RUT y Cámara de Comercio) a Supabase Storage, con permisos.
+- Lista de clientes con búsqueda por nombre o NIT, y ficha del cliente con pestañas Datos / Interacciones / Pedidos.
+- Listo cuando: se crea un cliente, se suben su foto y dos documentos, y se ven en la ficha.
 
 ## Hecho en la Fase 0
 - [x] Proyecto Next.js 15 (TypeScript + Tailwind + App Router) en `C:\Users\cardo\OneDrive\Documentos\Proyectos\crm-three-lions`.
@@ -38,7 +43,8 @@ Siguiente: **Fase 2: Clientes y documentos**. Espera el "sigue" del dueño.
 - [x] Carpeta `fotos-catalogo/` con 5 fotos de plumillas (no se sube a GitHub).
 
 ## Pendiente de tu parte
-- Decir "sigue" para empezar la Fase 2 (cuando la página publicada funcione).
+- Decir "sigue" para empezar la Fase 2.
+- Cuando quieras: crear las cuentas de tu equipo de ventas desde "Usuarios".
 - Más adelante: fotos de llantas y baterías en sus carpetas de `fotos-catalogo/`.
 
 ## Decisiones tomadas
