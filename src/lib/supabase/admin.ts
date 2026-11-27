@@ -5,7 +5,8 @@ import { createClient } from "@supabase/supabase-js";
 // Solo se usa en el servidor, para tareas de administrador ya verificadas
 // (por ejemplo, crear usuarios). Nunca llega al navegador.
 export function crearClienteAdmin() {
-  const secreta = process.env.SUPABASE_SECRET_KEY;
+  // .trim(): ignora espacios o saltos de línea que se cuelan al pegar la clave
+  const secreta = process.env.SUPABASE_SECRET_KEY?.trim();
   if (!secreta) {
     throw new Error("Falta SUPABASE_SECRET_KEY en las variables de entorno.");
   }
