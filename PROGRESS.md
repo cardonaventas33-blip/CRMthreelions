@@ -3,11 +3,11 @@
 > Si en otra sesión escribes "continúa", Claude lee este archivo y `docs/PLANO.md` y sigue desde aquí.
 
 ## Fase actual
-**Fase 3: Catálogo y pedidos — HECHA en el computador (26-nov-2026), falta publicarla.**
-Probada de punta a punta (los datos de prueba se borraron; la numeración de pedidos empieza en #1).
-El catálogo ya tiene las 18 categorías y las **59 plumillas IMCOV** del dueño (sin precio y con stock 0).
-Falta: (1) permiso del dueño para publicar, (2) la autorización escrita de IMCOVALLE para copiar su catálogo
-(el copiador ya está listo) y (3) que el dueño ponga precios y stock. Después: "sigue" para la Fase 4.
+**Fase 3: Catálogo y pedidos — PUBLICADA (26-nov-2026), con permiso del dueño.**
+Revisada en la página publicada: catálogo con las 18 categorías y las **59 plumillas IMCOV** (con foto, sin precio,
+stock 0), pedidos e inicio con ventas por tipo; sin errores en la consola. La numeración de pedidos empieza en #1.
+Falta: (1) la autorización escrita de IMCOVALLE para copiar su catálogo (el copiador ya está listo) y
+(2) que el dueño ponga precios y stock. Después: "sigue" para la Fase 4.
 
 ## Hecho en la Fase 3
 - [x] Migración `20261127030000_fase3_catalogo_pedidos.sql` (aplicada): productos con línea, medida y marca;
@@ -50,7 +50,7 @@ Falta: (1) permiso del dueño para publicar, (2) la autorización escrita de IMC
   inventados (`datos/prueba/productos.json`), que luego se borraron. **No se ha copiado nada de IMCOVALLE.**
 
 ## Pendiente de la Fase 3
-- [ ] Publicar en Vercel (con permiso del dueño).
+- [x] Publicada en Vercel (26-nov-2026), con permiso del dueño.
 - [ ] Autorización escrita de IMCOVALLE. Con ella: `node scripts/imcovalle.mjs copiar --autorizado`
   (unos 15–20 minutos) y después `node scripts/imcovalle.mjs cargar` (primero se puede usar `--simular`).
 - [ ] El dueño pone precios y stock (hoy todo dice "Sin precio" y "Agotado").
@@ -129,7 +129,7 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 - [x] Carpeta `fotos-catalogo/` con 5 fotos de plumillas (no se sube a GitHub).
 
 ## Pendiente de tu parte
-- Dar permiso para publicar la Fase 3.
+- Probar la Fase 3 en la página publicada (catálogo, plumillas, un pedido de prueba).
 - Pedir a IMCOVALLE la autorización escrita (un correo sirve) para copiar su catálogo. Si te dan un Excel, mejor.
 - Poner precios y stock a los productos (empezando por las 59 plumillas).
 - Cuando quieras: crear las cuentas de tu equipo de ventas desde "Usuarios".
