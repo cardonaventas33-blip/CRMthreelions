@@ -80,7 +80,9 @@ Decidir en la Fase 3 si cada medida es un producto (SKU) distinto o una opción 
 - Probar permisos: bloque `do $$ ... $$` que crea usuarios de prueba, usa `set local role authenticated` con
   `request.jwt.claims`, y termina con `raise exception` para que todo se deshaga.
 - Si faltan las claves en Vercel, el middleware responde 503 "Falta configurar las claves de Supabase".
-- En Vercel, las claves se agregan con el botón "Agregar variable de entorno" (el buscador de arriba no guarda nada).
+- En Vercel, las claves van en el PROYECTO: proyecto → Settings → Environment Variables → pestaña **"Proyecto"**,
+  botón "Agregar variable de entorno". NO en la página del equipo ni en la pestaña "Compartido" (esas no llegan al
+  proyecto si no se conectan). El buscador de arriba no guarda nada. Revisar que los nombres no pierdan la primera letra.
   Después de cambiarlas hay que volver a publicar.
 - Subir a GitHub: la cuenta está guardada en este computador. Si vuelve a pedir inicio de sesión, usar
   `git credential-manager github login --device` en el panel Terminal.
