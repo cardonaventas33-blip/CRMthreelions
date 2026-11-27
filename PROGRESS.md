@@ -3,8 +3,11 @@
 > Si en otra sesión escribes "continúa", Claude lee este archivo y `docs/PLANO.md` y sigue desde aquí.
 
 ## Fase actual
-**Fase 2: Clientes y documentos — construida y probada en el computador (26-nov-2026).**
-Falta publicarla (con permiso del dueño) y que él pruebe subir un documento real en la página publicada.
+**Fase 2: Clientes y documentos — publicada (26-nov-2026).**
+La página de Clientes carga bien en la versión publicada. Falta solo que el dueño cree su primer cliente real
+y le suba un documento (la subida de archivos es lo único que no se ha probado con un archivo de verdad).
+Siguiente: **Fase 3: Catálogo y pedidos** (espera el "sigue"). Para esa fase sirve la lista de productos
+(nombre, SKU, categoría, precio, stock), por ejemplo en Excel.
 
 ## Hecho en la Fase 2 (el dueño pidió que fuera como su referencia: otro CRM comercial)
 - [x] Migración `20261127010000_fase2_clientes_sedes_contactos.sql` (aplicada): datos nuevos de la empresa
@@ -28,8 +31,9 @@ Falta publicarla (con permiso del dueño) y que él pruebe subir un documento re
   interacción, ficha, lista en computador y celular. Falta probar la subida real de un archivo.
 
 ## Pendiente de la Fase 2
-- [ ] Publicar en Vercel (pedir permiso).
-- [ ] El dueño prueba subir un documento (por ejemplo el RUT) en la página publicada.
+- [x] Publicada en Vercel (26-nov-2026), con permiso del dueño.
+- [ ] El dueño crea su primer cliente real y le sube un documento (por ejemplo el RUT) en la página publicada.
+  Para comprobarlo: contar filas en `clients` y archivos en `storage.objects` (bucket `clientes`).
 
 ## Fase 1: Autenticación y estructura de datos — TERMINADA (26-nov-2026)
 El dueño entró con su usuario administrador en la página publicada (https://cr-mthreelions.vercel.app).
