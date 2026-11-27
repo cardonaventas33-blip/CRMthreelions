@@ -3,6 +3,7 @@ import {
   BatteryCharging,
   CalendarDays,
   CircleDollarSign,
+  ClipboardList,
   Disc3,
   Package,
   ShoppingCart,
@@ -12,6 +13,8 @@ import {
   Wind,
   type LucideIcon,
 } from "lucide-react";
+import { InsigniaPedido } from "@/components/catalogo/insignias";
+import { listarPedidos } from "@/lib/catalogo/datos";
 import { pesos } from "@/lib/clientes/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 import { obtenerResumen, type Indicador } from "@/lib/tablero";
@@ -73,7 +76,11 @@ function Tarjeta({
 }
 
 export default async function Inicio() {
-  const [usuario, resumen] = await Promise.all([obtenerUsuarioActual(), obtenerResumen()]);
+  const [usuario, resumen, recientes] = await Promise.all([
+    obtenerUsuarioActual(),
+    obtenerResumen(),
+    listarPedidos({ limite: 5 }),
+  ]);
   const primerNombre = usuario?.nombre.trim().split(/\s+/)[0];
   const sinVentas = resumen.ventas.actual === 0 && resumen.ventas.anterior === 0;
 
@@ -86,7 +93,7 @@ export default async function Inicio() {
 
       {sinVentas && (
         <p className="mt-6 rounded-xl bg-mist px-4 py-3 text-sm text-ink-soft">
-          Las ventas se llenan solas cuando se registren pedidos enviados o completados (llega en la Fase 3).
+          Las ventas se llenan solas cuando un pedido pasa a «Enviado» o «Completado».
         </p>
       )}
 
@@ -117,6 +124,41 @@ export default async function Inicio() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <section className="rounded-xl border border-line p-5">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <ClipboardList className="size-5 text-brand" aria-hidden />
+              Pedidos recientes
+            </h2>
+            <Link href="/pedidos" className="inline-flex min-h-9 items-center text-sm font-semibold text-brand hover:underline">
+              Ver todos
+            </Link>
+          </div>
+          {recientes.pedidos.length === 0 ? (
+            <p className="mt-3 text-sm text-ink-soft">
+              Todavía no hay pedidos.{" "}
+              <Link href="/pedidos/nuevo" className="font-semibold text-brand hover:underline">Crea el primero</Link>.
+            </p>
+          ) : (
+            <ul className="mt-3 divide-y divide-line">
+              {recientes.pedidos.map((p) => (
+                <li key={p.id}>
+                  <Link href={`/pedidos/${p.id}`} className="flex min-h-12 items-center gap-3 py-2 hover:text-brand">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium">
+                        <span className="tabular-nums">#{p.number}</span> · {p.cliente?.trade_name || p.cliente?.name || "—"}
+                      </span>
+                      <span className="block truncate text-xs text-ink-soft">{p.vendedor?.name || p.vendedor?.email || "—"}</span>
+                    </span>
+                    <InsigniaPedido estado={p.status} />
+                    <span className="shrink-0 text-sm font-semibold tabular-nums">{pesos(p.total)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
         <section className="rounded-xl border border-line p-5">
           <div className="flex items-center justify-between gap-2">
             <h2 className="flex items-center gap-2 font-semibold">
@@ -151,7 +193,7 @@ export default async function Inicio() {
           )}
         </section>
 
-        <section className="rounded-xl border border-line p-5">
+        <section className="rounded-xl border border-line p-5 lg:col-span-2">
           <h2 className="flex items-center gap-2 font-semibold">
             <CalendarDays className="size-5 text-brand" aria-hidden />
             Próximas citas

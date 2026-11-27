@@ -61,6 +61,7 @@ export const grupos: GrupoMenu[] = [
         fase: 3,
         descripcion:
           "Arma pedidos con productos del catálogo; el total se calcula solo. Cada pedido pasa de borrador a enviado y completado, y lo puedes mandar por WhatsApp o correo.",
+        paginaPropia: true,
       },
       {
         slug: "catalogo",
@@ -69,6 +70,7 @@ export const grupos: GrupoMenu[] = [
         fase: 3,
         descripcion:
           "Tus plumillas, llantas y baterías con foto, código (SKU), precio y stock.",
+        paginaPropia: true,
       },
     ],
   },

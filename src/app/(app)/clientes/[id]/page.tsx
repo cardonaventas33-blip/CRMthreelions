@@ -12,8 +12,11 @@ import {
   Phone,
   Users,
 } from "lucide-react";
+import { InsigniaPedido } from "@/components/catalogo/insignias";
 import { InsigniaEstado, InsigniasDocumentos } from "@/components/clientes/insignias";
 import { FormularioInteraccion } from "@/components/clientes/interacciones";
+import { BotonCrearPedido } from "@/components/pedidos/crear-pedido";
+import { listarPedidos } from "@/lib/catalogo/datos";
 import { enlacesFirmados, listarInteracciones, obtenerCliente } from "@/lib/clientes/datos";
 import {
   DIAS_SEMANA,
@@ -21,6 +24,7 @@ import {
   TIPOS_INTERACCION,
   horaBonita,
   nombrePlazo,
+  pesos,
 } from "@/lib/clientes/opciones";
 import { iniciales } from "@/lib/roles";
 
@@ -35,6 +39,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const formatoFecha = new Intl.DateTimeFormat("es-CO", {
   dateStyle: "medium",
   timeStyle: "short",
+  timeZone: "America/Bogota",
+});
+
+const formatoDia = new Intl.DateTimeFormat("es-CO", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
   timeZone: "America/Bogota",
 });
 
@@ -59,7 +70,7 @@ export default async function FichaCliente({ params, searchParams }: Props) {
   const cliente = await obtenerCliente(id);
   if (!cliente) notFound();
 
-  const [enlaces, interacciones] = await Promise.all([
+  const [enlaces, interacciones, { pedidos }] = await Promise.all([
     enlacesFirmados([
       cliente.photo_url,
       cliente.rut_doc_url,
@@ -68,12 +79,14 @@ export default async function FichaCliente({ params, searchParams }: Props) {
       ...cliente.sedes.map((s) => s.photo_url),
     ]),
     listarInteracciones(cliente.id),
+    listarPedidos({ clienteId: cliente.id, limite: 200 }),
   ]);
+  const comprado = pedidos.filter((p) => p.status === "completado").reduce((suma, p) => suma + p.total, 0);
 
   const pestanas = [
     { clave: "datos", nombre: "Datos" },
     { clave: "interacciones", nombre: `Interacciones (${interacciones.length})` },
-    { clave: "pedidos", nombre: "Pedidos" },
+    { clave: "pedidos", nombre: `Pedidos (${pedidos.length})` },
   ];
   const activa = pestanas.some((p) => p.clave === pestana) ? pestana : "datos";
   const nombreSede = (idSede: string | null) => cliente.sedes.find((s) => s.id === idSede)?.name;
@@ -114,14 +127,15 @@ export default async function FichaCliente({ params, searchParams }: Props) {
       </div>
 
       {/* Pestañas */}
-      <nav aria-label="Secciones del cliente" className="mt-6 flex gap-1 overflow-x-auto border-b border-line">
+      {/* La línea de abajo es una sombra (no un borde) para que no aparezca una barra de desplazamiento */}
+      <nav aria-label="Secciones del cliente" className="mt-6 flex gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--color-line)]">
         {pestanas.map((p) => (
           <Link
             key={p.clave}
             href={`/clientes/${cliente.id}?pestana=${p.clave}`}
             scroll={false}
             aria-current={activa === p.clave ? "page" : undefined}
-            className={`-mb-px inline-flex min-h-11 items-center border-b-2 px-4 text-sm font-semibold whitespace-nowrap ${
+            className={`inline-flex min-h-11 items-center border-b-2 px-4 text-sm font-semibold whitespace-nowrap ${
               activa === p.clave ? "border-brand text-brand" : "border-transparent text-ink-soft hover:text-ink"
             }`}
           >
@@ -305,11 +319,43 @@ export default async function FichaCliente({ params, searchParams }: Props) {
       )}
 
       {activa === "pedidos" && (
-        <div className="mt-6 rounded-xl border border-dashed border-line px-6 py-12 text-center">
-          <ClipboardList className="mx-auto size-10 text-ink-soft" aria-hidden />
-          <p className="mt-3 font-semibold">Pedidos de este cliente</p>
-          <p className="mt-1 text-sm text-ink-soft">Aparecerán aquí cuando activemos los pedidos (Fase 3).</p>
-        </div>
+        <section className="mt-6 rounded-xl border border-line p-4 sm:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="font-semibold">Pedidos de este cliente</h2>
+              {comprado > 0 && (
+                <p className="mt-1 text-sm text-ink-soft">
+                  Completados: <span className="font-semibold text-ink tabular-nums">{pesos(comprado)}</span> (IVA incluido)
+                </p>
+              )}
+            </div>
+            <div className="w-full sm:w-48">
+              <BotonCrearPedido clienteId={cliente.id} />
+            </div>
+          </div>
+          {pedidos.length === 0 ? (
+            <div className="mt-4 rounded-xl border border-dashed border-line px-6 py-10 text-center">
+              <ClipboardList className="mx-auto size-10 text-ink-soft" aria-hidden />
+              <p className="mt-3 text-sm text-ink-soft">Todavía no tiene pedidos. Crea el primero con &quot;Crear pedido&quot;.</p>
+            </div>
+          ) : (
+            <ul className="mt-4 divide-y divide-line">
+              {pedidos.map((p) => (
+                <li key={p.id}>
+                  <Link href={`/pedidos/${p.id}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-3 hover:bg-mist/40 sm:px-2">
+                    <span className="font-semibold tabular-nums">#{p.number}</span>
+                    <InsigniaPedido estado={p.status} />
+                    <span className="text-sm text-ink-soft">
+                      {formatoDia.format(new Date(p.created_at))} · {p.productos} {p.productos === 1 ? "producto" : "productos"} ·{" "}
+                      {p.vendedor?.name || p.vendedor?.email || "—"}
+                    </span>
+                    <span className="ml-auto font-semibold tabular-nums">{pesos(p.total)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
     </div>
   );
