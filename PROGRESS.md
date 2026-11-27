@@ -57,6 +57,7 @@ Falta: (1) la autorización escrita de IMCOVALLE para copiar su catálogo (el co
   botones rojos usa el color nuevo `on-brand` (blanca en claro, oscura en oscuro).
 - [x] Probado en computador y celular: inicio, catálogo con fotos, agenda, formularios, menú del celular y el modo
   Automático (cambia solo cuando el aparato cambia). Sin errores en la consola.
+- [x] Publicado en Vercel (26-nov-2026), con permiso del dueño, y revisado en la página publicada.
 
 ## Pendiente de la Fase 3
 - [x] Publicada en Vercel (26-nov-2026), con permiso del dueño.
