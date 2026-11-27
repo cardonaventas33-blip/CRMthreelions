@@ -25,6 +25,7 @@ Siguiente: **Fase 2: Clientes y documentos**. Espera el "sigue" del dueño.
 - [x] Las 3 claves agregadas en Vercel (Settings → Environment Variables), para todos los entornos.
 
 - [x] Página publicada funcionando con las claves de Vercel: el dueño entró con su usuario administrador.
+- [x] Crear usuarios desde la página publicada funciona: primer vendedor creado (26-nov-2026) con su rol correcto.
 
 ## Lo que viene en la Fase 2 (según el plano)
 - Crear y editar clientes (nombre, NIT/RUT, contacto, teléfono, correo, dirección, notas), con validación en el servidor.
@@ -90,6 +91,11 @@ Decidir en la Fase 3 si cada medida es un producto (SKU) distinto o una opción 
   botón "Agregar variable de entorno". NO en la página del equipo ni en la pestaña "Compartido" (esas no llegan al
   proyecto si no se conectan). El buscador de arriba no guarda nada. Revisar que los nombres no pierdan la primera letra.
   Después de cambiarlas hay que volver a publicar.
+- Claves secretas de Supabase: `default` la usa el computador (`.env.local`) y `vercel` la usa la página publicada
+  (se creó aparte porque copiar la `default` a mano falló dos veces). Si Supabase rechaza la clave del servidor,
+  el aviso de "Usuarios" dice la forma de la clave (largo, prefijo, puntos ocultos) sin mostrar su valor.
+- Diagnóstico útil: en los registros de Supabase (`edge_logs`) se ve cada intento contra `/auth/v1/admin/users`
+  con su código (401 = clave rechazada) y una pista (`unauthorized_hint`).
 - Subir a GitHub: la cuenta está guardada en este computador. Si vuelve a pedir inicio de sesión, usar
   `git credential-manager github login --device` en el panel Terminal.
 - Pegar claves o contraseñas: lo que funciona con el dueño es una ventana de PowerShell aparte
