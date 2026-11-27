@@ -51,7 +51,7 @@ export const grupos: GrupoMenu[] = [
         icono: CalendarDays,
         fase: 4,
         descripcion:
-          "Tus citas de la semana: crea, mueve o cancela citas con cada cliente. Si quieres, también aparecen en Google Calendar.",
+          "Tus citas de lunes a sábado: crea, mueve o cancela citas con cada cliente, pásalas a Google Calendar y confírmalas por WhatsApp.",
         paginaPropia: true,
       },
       {
@@ -94,8 +94,9 @@ export const grupos: GrupoMenu[] = [
         icono: Settings,
         fase: 4,
         descripcion:
-          "Conexiones con WhatsApp, el correo (Resend) y Google Calendar.",
+          "Cómo se comunica el CRM: WhatsApp, correo y Google Calendar.",
         soloAdmin: true,
+        paginaPropia: true,
       },
     ],
   },

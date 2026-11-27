@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   CalendarClock,
+  CalendarPlus,
   ClipboardList,
   ExternalLink,
   Mail,
@@ -12,10 +13,12 @@ import {
   Phone,
   Users,
 } from "lucide-react";
+import { TarjetaCita } from "@/components/agenda/tarjeta-cita";
 import { InsigniaPedido } from "@/components/catalogo/insignias";
 import { InsigniaEstado, InsigniasDocumentos } from "@/components/clientes/insignias";
 import { FormularioInteraccion } from "@/components/clientes/interacciones";
 import { BotonCrearPedido } from "@/components/pedidos/crear-pedido";
+import { listarCitas } from "@/lib/agenda/datos";
 import { listarPedidos } from "@/lib/catalogo/datos";
 import { enlacesFirmados, listarInteracciones, obtenerCliente } from "@/lib/clientes/datos";
 import {
@@ -26,7 +29,9 @@ import {
   nombrePlazo,
   pesos,
 } from "@/lib/clientes/opciones";
+import { numeroWhatsApp } from "@/lib/contacto";
 import { iniciales } from "@/lib/roles";
+import { obtenerUsuarioActual } from "@/lib/sesion";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ pestana?: string }> };
 
@@ -49,12 +54,6 @@ const formatoDia = new Intl.DateTimeFormat("es-CO", {
   timeZone: "America/Bogota",
 });
 
-// Número para WhatsApp: si es celular colombiano de 10 dígitos, se le pone el 57
-function numeroWhatsApp(telefono: string) {
-  const digitos = telefono.replace(/\D/g, "");
-  return digitos.length === 10 && digitos.startsWith("3") ? `57${digitos}` : digitos;
-}
-
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: React.ReactNode }) {
   return (
     <div className="min-w-0">
@@ -70,7 +69,9 @@ export default async function FichaCliente({ params, searchParams }: Props) {
   const cliente = await obtenerCliente(id);
   if (!cliente) notFound();
 
-  const [enlaces, interacciones, { pedidos }] = await Promise.all([
+  const ahora = Date.now();
+  const unAnio = 365 * 24 * 60 * 60 * 1000;
+  const [enlaces, interacciones, { pedidos }, { citas }, yo] = await Promise.all([
     enlacesFirmados([
       cliente.photo_url,
       cliente.rut_doc_url,
@@ -80,12 +81,25 @@ export default async function FichaCliente({ params, searchParams }: Props) {
     ]),
     listarInteracciones(cliente.id),
     listarPedidos({ clienteId: cliente.id, limite: 200 }),
+    listarCitas({
+      desde: new Date(ahora - unAnio).toISOString(),
+      hasta: new Date(ahora + 2 * unAnio).toISOString(),
+      clienteId: cliente.id,
+      incluirCanceladas: true,
+      limite: 200,
+    }),
+    obtenerUsuarioActual(),
   ]);
   const comprado = pedidos.filter((p) => p.status === "completado").reduce((suma, p) => suma + p.total, 0);
+  const yaPaso = (c: { end_at: string }) => new Date(c.end_at).getTime() < ahora;
+  const citasProximas = citas.filter((c) => !yaPaso(c));
+  const citasPasadas = citas.filter(yaPaso).reverse().slice(0, 10);
+  const puedeEditarCita = (userId: string) => yo?.rol === "admin" || yo?.id === userId;
 
   const pestanas = [
     { clave: "datos", nombre: "Datos" },
     { clave: "interacciones", nombre: `Interacciones (${interacciones.length})` },
+    { clave: "citas", nombre: `Citas (${citasProximas.filter((c) => !c.cancelled).length})` },
     { clave: "pedidos", nombre: `Pedidos (${pedidos.length})` },
   ];
   const activa = pestanas.some((p) => p.clave === pestana) ? pestana : "datos";
@@ -316,6 +330,40 @@ export default async function FichaCliente({ params, searchParams }: Props) {
             )}
           </section>
         </div>
+      )}
+
+      {activa === "citas" && (
+        <section className="mt-6 rounded-xl border border-line p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-semibold">Próximas citas</h2>
+            <Link
+              href={`/agenda/nueva?cliente=${cliente.id}`}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 text-sm font-semibold text-on-brand hover:bg-brand-dark"
+            >
+              <CalendarPlus className="size-4" aria-hidden />
+              Agendar cita
+            </Link>
+          </div>
+          {citasProximas.length === 0 ? (
+            <p className="mt-3 text-sm text-ink-soft">No tiene citas próximas.</p>
+          ) : (
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+              {citasProximas.map((c) => (
+                <TarjetaCita key={c.id} cita={c} puedeEditar={puedeEditarCita(c.user_id)} conFecha />
+              ))}
+            </div>
+          )}
+          {citasPasadas.length > 0 && (
+            <>
+              <h2 className="mt-8 font-semibold">Citas anteriores</h2>
+              <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+                {citasPasadas.map((c) => (
+                  <TarjetaCita key={c.id} cita={c} puedeEditar={puedeEditarCita(c.user_id)} conFecha />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
       )}
 
       {activa === "pedidos" && (

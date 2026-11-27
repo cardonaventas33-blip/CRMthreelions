@@ -15,6 +15,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { InsigniaPedido } from "@/components/catalogo/insignias";
+import { listarCitas } from "@/lib/agenda/datos";
+import { conMayuscula, partesColombia, textoFecha, textoHora } from "@/lib/agenda/fechas";
 import { listarPedidos } from "@/lib/catalogo/datos";
 import { pesos } from "@/lib/clientes/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
@@ -77,10 +79,19 @@ function Tarjeta({
 }
 
 export default async function Inicio() {
-  const [usuario, resumen, recientes] = await Promise.all([
-    obtenerUsuarioActual(),
+  const usuario = await obtenerUsuarioActual();
+  const esAdmin = usuario?.rol === "admin";
+  const ahora = Date.now();
+  const [resumen, recientes, { citas: proximas }] = await Promise.all([
     obtenerResumen(),
     listarPedidos({ limite: 5 }),
+    // El administrador ve las del equipo; cada vendedor, las suyas
+    listarCitas({
+      desde: new Date(ahora).toISOString(),
+      hasta: new Date(ahora + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      usuarioId: esAdmin ? undefined : usuario?.id,
+      limite: 6,
+    }),
   ]);
   const primerNombre = usuario?.nombre.trim().split(/\s+/)[0];
   const sinVentas = resumen.ventas.actual === 0 && resumen.ventas.anterior === 0;
@@ -200,11 +211,44 @@ export default async function Inicio() {
         </section>
 
         <section className="rounded-xl border border-line p-5 lg:col-span-2">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <CalendarDays className="size-5 text-brand" aria-hidden />
-            Próximas citas
-          </h2>
-          <p className="mt-3 text-sm text-ink-soft">Tus citas de los próximos días aparecerán aquí (Fase 4).</p>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <CalendarDays className="size-5 text-brand" aria-hidden />
+              {esAdmin ? "Próximas citas del equipo" : "Tus próximas citas"}
+            </h2>
+            <Link href="/agenda" className="inline-flex min-h-9 items-center text-sm font-semibold text-brand hover:underline">
+              Ver agenda
+            </Link>
+          </div>
+          {proximas.length === 0 ? (
+            <p className="mt-3 text-sm text-ink-soft">
+              No hay citas en los próximos 30 días.{" "}
+              <Link href="/agenda/nueva" className="font-semibold text-brand hover:underline">Agenda una</Link>.
+            </p>
+          ) : (
+            <ul className="mt-3 divide-y divide-line">
+              {proximas.map((c) => {
+                const { fecha } = partesColombia(c.start_at);
+                const detalle = [c.cliente?.trade_name || c.cliente?.name, esAdmin ? c.responsable?.name : null].filter(Boolean).join(" · ");
+                return (
+                  <li key={c.id}>
+                    <Link href={`/agenda?dia=${fecha}`} className="flex min-h-14 items-center gap-3 py-2 hover:text-brand">
+                      <span className="w-28 shrink-0 text-sm">
+                        <span className="block font-semibold">
+                          {conMayuscula(textoFecha(fecha, { weekday: "short", day: "numeric", month: "short" }))}
+                        </span>
+                        <span className="block text-xs text-ink-soft tabular-nums">{textoHora(c.start_at)}</span>
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{c.title}</span>
+                        <span className="block truncate text-xs text-ink-soft">{detalle || "Sin cliente"}</span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </section>
       </div>
     </div>

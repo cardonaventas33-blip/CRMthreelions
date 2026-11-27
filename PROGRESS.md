@@ -3,11 +3,33 @@
 > Si en otra sesión escribes "continúa", Claude lee este archivo y `docs/PLANO.md` y sigue desde aquí.
 
 ## Fase actual
-**Fase 3: Catálogo y pedidos — PUBLICADA (26-nov-2026), con permiso del dueño.**
-Revisada en la página publicada: catálogo con las 18 categorías y las **59 plumillas IMCOV** (con foto, sin precio,
-stock 0), pedidos e inicio con ventas por tipo; sin errores en la consola. La numeración de pedidos empieza en #1.
-Falta: (1) la autorización escrita de IMCOVALLE para copiar su catálogo (el copiador ya está listo) y
-(2) que el dueño ponga precios y stock. Después: "sigue" para la Fase 4.
+**Fase 4: Agenda y comunicación — HECHA en el computador (27-nov-2026), falta publicarla.**
+El dueño ya creó su primera cita desde su navegador (sábado 28-nov, 9:30 a. m.) y quedó bien guardada.
+Falta: permiso del dueño para publicar. Siguen pendientes de la Fase 3: precios y stock (el equipo ya creó 4 pedidos
+vacíos porque ningún producto tiene precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5.
+
+## Hecho en la Fase 4
+- [x] Decisiones del dueño (27-nov): el correo sale **desde el correo de cada vendedor** (el botón abre Gmail/Outlook con
+  el pedido escrito) y Google Calendar con un **botón** que abre la cita ya llena. Gratis y sin cuentas nuevas.
+  Resend (envío automático, necesita dominio propio) y la sincronización automática con Google quedan para después.
+- [x] `/agenda`: vista **Mes** (calendario de lunes a sábado con las citas de cada día) y vista **Semana**; "Mis citas" o
+  "Todo el equipo" (el admin ve el equipo por defecto). Cada cita muestra hora, cliente, dirección, responsable y notas,
+  con botones **Editar**, **Google Calendar** y **Confirmar por WhatsApp** (al celular del contacto comercial).
+- [x] `/agenda/nueva` y `/agenda/[id]/editar`: título (con sugerencias), cliente, fecha, hora, duración, notas y,
+  para el admin, el responsable. No deja agendar domingos. **Cancelar** (queda tachada), volver a la agenda o borrar.
+- [x] Inicio: "Tus próximas citas" (el admin ve las del equipo), próximos 30 días.
+- [x] Ficha del cliente: pestaña **Citas** con las próximas y las anteriores, y botón "Agendar cita".
+- [x] Pedidos: sección **"Enviar al cliente"** con botones **WhatsApp** y **Correo** por cada contacto (primero los
+  comerciales) y la empresa; el mensaje trae los productos, el total con IVA, las notas y la firma de quien envía.
+- [x] `/configuracion` (solo admin): cómo está conectado el CRM (WhatsApp, correo, Google Calendar) y lo que queda
+  para después.
+- [x] Todo en hora de Colombia (UTC-5). Pruebas sin pantalla: `node scripts/probar-agenda.mjs` (20 de 20 OK).
+- [x] Revisado: tipos, lint y registros del servidor sin errores mientras el dueño usaba la agenda. El panel del
+  navegador de Claude perdió la sesión, así que las pantallas las probó el dueño en su propio navegador.
+
+## Fase 3: Catálogo y pedidos — PUBLICADA (26-nov-2026)
+Revisada en la página publicada: catálogo con las 18 categorías y las 59 plumillas IMCOV (con foto, sin precio,
+stock 0), pedidos e inicio con ventas por tipo; sin errores en la consola.
 
 ## Hecho en la Fase 3
 - [x] Migración `20261127030000_fase3_catalogo_pedidos.sql` (aplicada): productos con línea, medida y marca;
@@ -139,7 +161,9 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 - [x] Carpeta `fotos-catalogo/` con 5 fotos de plumillas (no se sube a GitHub).
 
 ## Pendiente de tu parte
-- Probar la Fase 3 en la página publicada (catálogo, plumillas, un pedido de prueba).
+- Dar permiso para publicar la Fase 4.
+- **Poner precios** (y stock) a los productos que tu equipo vende: sin precio no pueden armar pedidos
+  (ya hay 4 pedidos vacíos de David Andrade y Felipe Velasquez).
 - Pedir a IMCOVALLE la autorización escrita (un correo sirve) para copiar su catálogo. Si te dan un Excel, mejor.
 - Poner precios y stock a los productos (empezando por las 59 plumillas).
 - Cuando quieras: crear las cuentas de tu equipo de ventas desde "Usuarios".

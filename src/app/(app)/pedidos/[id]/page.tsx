@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { InsigniaPedido } from "@/components/catalogo/insignias";
 import { EditorPedido } from "@/components/pedidos/editor";
+import { EnviarPedido } from "@/components/pedidos/enviar-pedido";
 import { listarCategorias, obtenerPedido } from "@/lib/catalogo/datos";
 import { nombrePlazo } from "@/lib/clientes/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
@@ -48,7 +49,12 @@ export default async function PaginaPedido({ params }: Props) {
       </p>
 
       <div className="mt-8">
-        <EditorPedido pedido={pedido} puedeEditar={puedeEditar} categorias={categorias} />
+        <EditorPedido
+          pedido={pedido}
+          puedeEditar={puedeEditar}
+          categorias={categorias}
+          enviar={<EnviarPedido pedido={pedido} firma={[yo?.nombre, "Three Lions SAS"].filter(Boolean).join("\n")} />}
+        />
       </div>
     </div>
   );

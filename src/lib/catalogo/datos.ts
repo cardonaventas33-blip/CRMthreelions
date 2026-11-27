@@ -165,6 +165,16 @@ export type PedidoDetalle = {
     nit_rut: string | null;
     city: string | null;
     payment_term_days: number;
+    phone: string | null;
+    email: string | null;
+    contactos: {
+      first_name: string;
+      last_name: string;
+      role_title: string | null;
+      phone: string | null;
+      email: string | null;
+      receives_sales: boolean;
+    }[];
   } | null;
   vendedor: { name: string; email: string } | null;
   items: ItemPedido[];
@@ -177,7 +187,7 @@ export const obtenerPedido = cache(async (id: string): Promise<PedidoDetalle | n
   const { data } = await supabase
     .from("orders")
     .select(
-      "id, number, status, total, notes, created_at, updated_at, user_id, cliente:clients(id, name, trade_name, nit_rut, city, payment_term_days), vendedor:profiles!orders_user_id_fkey(name, email), items:order_items(id, quantity, unit_price, subtotal, producto:products(id, name, sku, size, line, photo_url, stock, category))",
+      "id, number, status, total, notes, created_at, updated_at, user_id, cliente:clients(id, name, trade_name, nit_rut, city, payment_term_days, phone, email, contactos:client_contacts(first_name, last_name, role_title, phone, email, receives_sales)), vendedor:profiles!orders_user_id_fkey(name, email), items:order_items(id, quantity, unit_price, subtotal, producto:products(id, name, sku, size, line, photo_url, stock, category))",
     )
     .eq("id", id)
     .maybeSingle();

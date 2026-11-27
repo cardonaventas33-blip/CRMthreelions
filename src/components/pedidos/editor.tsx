@@ -339,10 +339,13 @@ export function EditorPedido({
   pedido,
   puedeEditar,
   categorias,
+  enviar,
 }: {
   pedido: PedidoDetalle;
   puedeEditar: boolean;
   categorias: Categoria[];
+  /** Sección "Enviar al cliente" (WhatsApp y correo), armada en el servidor */
+  enviar?: React.ReactNode;
 }) {
   const editable = puedeEditar && pedido.status === "borrador";
   const unidades = pedido.items.reduce((suma, i) => suma + i.quantity, 0);
@@ -371,7 +374,7 @@ export function EditorPedido({
         )}
       </div>
 
-      <div className="flex flex-col gap-6 lg:sticky lg:top-6">
+      <div className="flex flex-col gap-6">
         <section className="rounded-xl border border-line p-4 sm:p-5">
           <p className="text-sm text-ink-soft">Total (IVA incluido)</p>
           <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums">{pesos(pedido.total)}</p>
@@ -379,6 +382,7 @@ export function EditorPedido({
           {puedeEditar && <div className="mt-4"><AccionesEstado pedido={pedido} /></div>}
           {!puedeEditar && <p className="mt-4 text-xs text-ink-soft">Solo quien creó el pedido o un administrador puede cambiarlo.</p>}
         </section>
+        {enviar}
         <section className="rounded-xl border border-line p-4 sm:p-5">
           <FormularioNotas pedido={pedido} editable={puedeEditar && pedido.status !== "completado"} />
         </section>
