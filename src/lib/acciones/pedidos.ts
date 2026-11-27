@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { EstadoAccion } from "@/lib/acciones/tipos";
+import { PATRON_CATEGORIA, palabrasDeBusqueda } from "@/lib/catalogo/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 import { crearClienteServidor } from "@/lib/supabase/server";
 
@@ -40,10 +41,9 @@ export type ProductoEncontrado = {
   photo_url: string | null;
 };
 
-// Buscador de productos para agregar a un pedido (busca en el servidor, máximo 30)
+// Buscador de productos para agregar a un pedido (busca en el servidor, sin tildes, máximo 30)
 export async function buscarProductos(texto: string, categoria: string): Promise<ProductoEncontrado[]> {
   if (!(await puedeTrabajar())) return [];
-  const q = texto.replace(/[,()*%\\]/g, " ").trim().slice(0, 60);
   const supabase = await crearClienteServidor();
   let consulta = supabase
     .from("products")
@@ -51,8 +51,10 @@ export async function buscarProductos(texto: string, categoria: string): Promise
     .eq("active", true)
     .order("name", { ascending: true })
     .limit(30);
-  if (q) consulta = consulta.or(`name.ilike.%${q}%,sku.ilike.%${q}%,line.ilike.%${q}%`);
-  if (["plumillas", "llantas", "baterias"].includes(categoria)) consulta = consulta.eq("category", categoria);
+  for (const palabra of palabrasDeBusqueda(typeof texto === "string" ? texto : "")) {
+    consulta = consulta.ilike("search", `%${palabra}%`);
+  }
+  if (typeof categoria === "string" && PATRON_CATEGORIA.test(categoria)) consulta = consulta.eq("category", categoria);
   const { data } = await consulta;
   return ((data ?? []) as ProductoEncontrado[]).map((p) => ({ ...p, price: Number(p.price) }));
 }

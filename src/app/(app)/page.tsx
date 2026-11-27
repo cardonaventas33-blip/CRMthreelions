@@ -11,6 +11,7 @@ import {
   TrendingUp,
   UsersRound,
   Wind,
+  Wrench,
   type LucideIcon,
 } from "lucide-react";
 import { InsigniaPedido } from "@/components/catalogo/insignias";
@@ -100,11 +101,8 @@ export default async function Inicio() {
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <Tarjeta titulo="Ventas mes en curso" icono={CircleDollarSign} indicador={resumen.ventas} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
         <Tarjeta titulo="Unidades mes en curso" icono={ShoppingCart} indicador={resumen.unidades} formato={(n) => numero.format(n)} periodoAnterior={resumen.periodoAnterior} />
-        <Tarjeta titulo="Baterías mes en curso" icono={BatteryCharging} indicador={resumen.categorias.baterias} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
-        <Tarjeta titulo="Llantas mes en curso" icono={Disc3} indicador={resumen.categorias.llantas} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
-        <Tarjeta titulo="Plumillas mes en curso" icono={Wind} indicador={resumen.categorias.plumillas} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
 
-        <section className="flex flex-col gap-3 rounded-xl border border-line p-5">
+        <section className="flex flex-col gap-3 rounded-xl border border-line p-5 sm:col-span-2 xl:col-span-1">
           <div className="flex items-center gap-3">
             <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
               <UsersRound className="size-6" aria-hidden />
@@ -121,6 +119,14 @@ export default async function Inicio() {
             </Link>
           </div>
         </section>
+      </div>
+
+      <h2 className="mt-8 text-lg font-semibold">Ventas por tipo de producto</h2>
+      <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Tarjeta titulo="Llantas" icono={Disc3} indicador={resumen.categorias.llantas} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
+        <Tarjeta titulo="Baterías" icono={BatteryCharging} indicador={resumen.categorias.baterias} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
+        <Tarjeta titulo="Plumillas" icono={Wind} indicador={resumen.categorias.plumillas} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
+        <Tarjeta titulo="Otros productos" icono={Wrench} indicador={resumen.categorias.otros} formato={pesos} periodoAnterior={resumen.periodoAnterior} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">

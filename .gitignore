@@ -40,6 +40,9 @@ yarn-error.log*
 # y en la Fase 3 se cargan al catalogo (Supabase Storage)
 /fotos-catalogo/
 
+# datos copiados de otras páginas (catálogo de IMCOVALLE): se quedan en este computador
+/datos/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

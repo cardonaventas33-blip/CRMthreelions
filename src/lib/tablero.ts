@@ -1,4 +1,5 @@
 import "server-only";
+import type { Familia } from "@/lib/catalogo/opciones";
 import type { EstadoCliente } from "@/lib/clientes/opciones";
 import { crearClienteServidor } from "@/lib/supabase/server";
 
@@ -10,14 +11,14 @@ const MESES = [
 ];
 
 export type Indicador = { actual: number; anterior: number };
-export type Categoria = "baterias" | "llantas" | "plumillas";
 
 export type ResumenTablero = {
   periodo: string;
   periodoAnterior: string;
   ventas: Indicador;
   unidades: Indicador;
-  categorias: Record<Categoria, Indicador>;
+  // Ventas por familia: llantas, baterías, plumillas y otros productos
+  categorias: Record<Familia, Indicador>;
   clientes: Record<EstadoCliente, number> & { total: number };
   ultimosClientes: { id: string; name: string; trade_name: string | null; city: string | null }[];
 };
@@ -25,7 +26,11 @@ export type ResumenTablero = {
 type PedidoCrudo = {
   total: number | string;
   created_at: string;
-  order_items: { quantity: number; subtotal: number | string; products: { category: Categoria } | null }[];
+  order_items: {
+    quantity: number;
+    subtotal: number | string;
+    products: { categoria: { family: Familia } | null } | null;
+  }[];
 };
 
 export async function obtenerResumen(): Promise<ResumenTablero> {
@@ -46,7 +51,7 @@ export async function obtenerResumen(): Promise<ResumenTablero> {
   const [pedidos, clientes, ultimos] = await Promise.all([
     supabase
       .from("orders")
-      .select("total, created_at, order_items(quantity, subtotal, products(category))")
+      .select("total, created_at, order_items(quantity, subtotal, products(categoria:product_categories(family)))")
       .in("status", ["enviado", "completado"])
       .gte("created_at", new Date(inicioAnterior).toISOString()),
     supabase.from("clients").select("status"),
@@ -63,7 +68,7 @@ export async function obtenerResumen(): Promise<ResumenTablero> {
     periodoAnterior: `del 1 al ${diaAnterior} de ${MESES[mesAnterior]}`,
     ventas: vacio(),
     unidades: vacio(),
-    categorias: { baterias: vacio(), llantas: vacio(), plumillas: vacio() },
+    categorias: { llantas: vacio(), baterias: vacio(), plumillas: vacio(), otros: vacio() },
     clientes: { total: 0, pendiente: 0, validado: 0, inactivo: 0 },
     ultimosClientes: (ultimos.data ?? []) as ResumenTablero["ultimosClientes"],
   };
@@ -75,10 +80,8 @@ export async function obtenerResumen(): Promise<ResumenTablero> {
     resumen.ventas[tramo] += Number(pedido.total);
     for (const item of pedido.order_items ?? []) {
       resumen.unidades[tramo] += item.quantity;
-      const categoria = item.products?.category;
-      if (categoria && categoria in resumen.categorias) {
-        resumen.categorias[categoria][tramo] += Number(item.subtotal);
-      }
+      const familia = item.products?.categoria?.family ?? "otros";
+      if (familia in resumen.categorias) resumen.categorias[familia][tramo] += Number(item.subtotal);
     }
   }
 

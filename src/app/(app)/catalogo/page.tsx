@@ -3,32 +3,41 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, ImageIcon, Package, Plus, Search } from "lucide-react";
 import { InsigniaStock } from "@/components/catalogo/insignias";
 import { pesos } from "@/lib/clientes/opciones";
-import { listarProductos } from "@/lib/catalogo/datos";
-import { CATEGORIAS, urlFotoProducto } from "@/lib/catalogo/opciones";
+import { contarSinPrecio, listarCategorias, listarProductos } from "@/lib/catalogo/datos";
+import { urlFotoProducto } from "@/lib/catalogo/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 
 export const metadata: Metadata = { title: "Catálogo" };
 
-type Props = { searchParams: Promise<{ q?: string; categoria?: string; pagina?: string }> };
+type Props = { searchParams: Promise<{ q?: string; categoria?: string; pagina?: string; sinprecio?: string }> };
+
+const numero = new Intl.NumberFormat("es-CO");
 
 const claseControl =
   "h-11 w-full rounded-xl border border-line bg-paper px-3 text-base text-ink outline-none focus:border-ink focus:ring-2 focus:ring-brand/15 sm:text-sm";
 
 export default async function Catalogo({ searchParams }: Props) {
   const filtros = await searchParams;
-  const yo = await obtenerUsuarioActual();
+  const [yo, categorias] = await Promise.all([obtenerUsuarioActual(), listarCategorias()]);
   const esAdmin = yo?.rol === "admin";
-  const { productos, total, pagina, paginas, error } = await listarProductos({
-    q: filtros.q,
-    categoria: filtros.categoria,
-    incluirInactivos: esAdmin,
-    pagina: Number(filtros.pagina) || 1,
-  });
+  const nombreCategoria = new Map(categorias.map((c) => [c.slug, c.name]));
+  const soloSinPrecio = esAdmin && filtros.sinprecio === "1";
+  const [{ productos, total, pagina, paginas, error }, faltanPrecios] = await Promise.all([
+    listarProductos({
+      q: filtros.q,
+      categoria: filtros.categoria,
+      incluirInactivos: esAdmin,
+      soloSinPrecio,
+      pagina: Number(filtros.pagina) || 1,
+    }),
+    esAdmin ? contarSinPrecio() : Promise.resolve(0),
+  ]);
 
   const enlacePagina = (n: number) => {
     const p = new URLSearchParams();
     if (filtros.q) p.set("q", filtros.q);
     if (filtros.categoria) p.set("categoria", filtros.categoria);
+    if (soloSinPrecio) p.set("sinprecio", "1");
     if (n > 1) p.set("pagina", String(n));
     return p.size ? `/catalogo?${p}` : "/catalogo";
   };
@@ -67,22 +76,39 @@ export default async function Catalogo({ searchParams }: Props) {
           <label htmlFor="cat-categoria" className="sr-only">Categoría</label>
           <select id="cat-categoria" name="categoria" defaultValue={filtros.categoria ?? ""} className={claseControl}>
             <option value="">Todas las categorías</option>
-            {Object.entries(CATEGORIAS).map(([valor, nombre]) => (
-              <option key={valor} value={valor}>{nombre}</option>
+            {categorias.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.name}</option>
             ))}
           </select>
         </div>
         <button type="submit" className="h-11 rounded-xl bg-ink px-4 text-sm font-semibold text-paper hover:bg-ink/85">Buscar</button>
+        {esAdmin && (
+          <label className="flex min-h-10 cursor-pointer items-center gap-2 text-sm font-medium sm:col-span-3">
+            <input type="checkbox" name="sinprecio" value="1" defaultChecked={soloSinPrecio} className="size-5 accent-brand" />
+            Solo productos sin precio
+          </label>
+        )}
       </form>
 
+      {esAdmin && faltanPrecios > 0 && !soloSinPrecio && (
+        <p className="mt-4 rounded-xl bg-warn-soft px-4 py-3 text-sm">
+          {numero.format(faltanPrecios)} {faltanPrecios === 1 ? "producto todavía no tiene" : "productos todavía no tienen"} precio
+          y no se {faltanPrecios === 1 ? "puede" : "pueden"} pedir.{" "}
+          <Link href="/catalogo?sinprecio=1" className="font-semibold underline">Ver cuáles</Link>
+        </p>
+      )}
+
       <p className="mt-4 text-sm text-ink-soft" aria-live="polite">
-        {error ?? `${total} ${total === 1 ? "producto" : "productos"}${paginas > 1 ? ` · página ${pagina} de ${paginas}` : ""}`}
+        {error ??
+          `${numero.format(total)} ${total === 1 ? "producto" : "productos"}${paginas > 1 ? ` · página ${numero.format(pagina)} de ${numero.format(paginas)}` : ""}`}
       </p>
 
       {productos.length === 0 && !error ? (
         <div className="mt-4 rounded-xl border border-dashed border-line px-6 py-12 text-center">
           <Package className="mx-auto size-10 text-ink-soft" aria-hidden />
-          <p className="mt-3 font-semibold">{filtros.q || filtros.categoria ? "Ningún producto coincide" : "El catálogo está vacío"}</p>
+          <p className="mt-3 font-semibold">
+            {filtros.q || filtros.categoria || soloSinPrecio ? "Ningún producto coincide" : "El catálogo está vacío"}
+          </p>
           <p className="mt-1 text-sm text-ink-soft">
             {esAdmin ? "Agrega el primero con \"Nuevo producto\"." : "El administrador todavía no ha cargado productos."}
           </p>
@@ -103,12 +129,16 @@ export default async function Catalogo({ searchParams }: Props) {
                 </div>
                 <div className="flex flex-1 flex-col gap-1">
                   <p className="text-xs font-semibold tracking-wider text-ink-soft uppercase">
-                    {CATEGORIAS[p.category]}{p.brand ? ` · ${p.brand}` : ""}
+                    {nombreCategoria.get(p.category) ?? p.category}{p.brand ? ` · ${p.brand}` : ""}
                   </p>
                   <p className="font-semibold break-words">{p.name}</p>
                   <p className="text-xs break-all text-ink-soft tabular-nums">{p.sku}</p>
                   <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2">
-                    <span className="text-base font-bold tabular-nums sm:text-lg">{pesos(p.price)}</span>
+                    {p.price > 0 ? (
+                      <span className="text-base font-bold tabular-nums sm:text-lg">{pesos(p.price)}</span>
+                    ) : (
+                      <span className="text-sm font-semibold text-ink-soft">Sin precio</span>
+                    )}
                     <InsigniaStock stock={p.stock} />
                   </div>
                   {!p.active && <span className="text-xs font-semibold text-brand">Inactivo (no se vende)</span>}

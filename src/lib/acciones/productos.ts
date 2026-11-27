@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { EstadoAccion } from "@/lib/acciones/tipos";
-import { leerPesos } from "@/lib/catalogo/opciones";
+import { PATRON_CATEGORIA, esFotoExterna, leerPesos } from "@/lib/catalogo/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 import { crearClienteServidor } from "@/lib/supabase/server";
 
@@ -14,6 +14,12 @@ const leer = (datos: FormData, clave: string) => String(datos.get(clave) ?? "");
 async function esAdmin() {
   const yo = await obtenerUsuarioActual();
   return yo?.rol === "admin";
+}
+
+function mensajeErrorProducto(error: { code?: string }, porDefecto: string) {
+  if (error.code === "23505") return "Ya existe un producto con ese código (SKU).";
+  if (error.code === "23503") return "Esa categoría no existe. Elige una de la lista.";
+  return porDefecto;
 }
 
 const opcional = (max: number) =>
@@ -30,11 +36,11 @@ const esquemaProducto = z.object({
     .trim()
     .toUpperCase()
     .regex(/^[A-Z0-9][A-Z0-9._\-/]{0,59}$/, "El código (SKU) solo lleva letras, números, puntos o guiones."),
-  category: z.enum(["plumillas", "llantas", "baterias"], { error: "Elige la categoría." }),
+  category: z.string().regex(PATRON_CATEGORIA, "Elige la categoría."),
   line: opcional(120),
   size: opcional(20),
   brand: opcional(60),
-  price: z.number({ error: "Escribe el precio." }).int().min(0, "El precio no puede ser negativo.").max(999999999, "El precio es muy alto."),
+  price: z.number({ error: "El precio solo lleva números." }).int().min(0, "El precio no puede ser negativo.").max(999999999, "El precio es muy alto."),
   stock: z.number({ error: "Escribe el stock." }).int("El stock va sin decimales.").min(0, "El stock no puede ser negativo.").max(1000000, "El stock es muy alto."),
   description: opcional(2000),
   active: z.boolean(),
@@ -53,7 +59,8 @@ export async function guardarProducto(_antes: EstadoAccion, datos: FormData): Pr
     line: linea,
     size: medida,
     brand: leer(datos, "brand"),
-    price: leerPesos(leer(datos, "price")),
+    // Vacío = sin precio (0): el producto queda en el catálogo pero todavía no se puede pedir
+    price: leer(datos, "price").trim() === "" ? 0 : leerPesos(leer(datos, "price")),
     stock: leer(datos, "stock").trim() === "" ? 0 : Number(leer(datos, "stock")),
     description: leer(datos, "description"),
     active: datos.get("active") === "on",
@@ -66,25 +73,22 @@ export async function guardarProducto(_antes: EstadoAccion, datos: FormData): Pr
   if (id) {
     if (!z.uuid().safeParse(id).success) return { error: "Datos no válidos." };
     const { data, error } = await supabase.from("products").update(r.data).eq("id", id).select("id");
-    if (error) {
-      return { error: error.code === "23505" ? "Ya existe un producto con ese código (SKU)." : "No se pudo guardar el producto." };
-    }
+    if (error) return { error: mensajeErrorProducto(error, "No se pudo guardar el producto.") };
     if (!data?.length) return { error: SOLO_ADMIN };
     revalidatePath("/catalogo", "layout");
     return { ok: "Producto guardado." };
   }
 
   const { data, error } = await supabase.from("products").insert(r.data).select("id").single();
-  if (error || !data) {
-    return { error: error?.code === "23505" ? "Ya existe un producto con ese código (SKU)." : "No se pudo crear el producto." };
-  }
+  if (error || !data) return { error: mensajeErrorProducto(error ?? {}, "No se pudo crear el producto.") };
   revalidatePath("/catalogo", "layout");
   redirect(`/catalogo/${data.id}/editar?nuevo=1`);
 }
 
-// Borra la foto del almacén solo si ningún otro producto la usa (la línea puede compartirla)
+// Borra la foto del almacén solo si ningún otro producto la usa (la línea puede compartirla).
+// Las fotos de otra página (https://…) no están en nuestro almacén: no hay nada que borrar.
 async function borrarFotoSiNadieLaUsa(ruta: string | null, productoId: string) {
-  if (!ruta) return;
+  if (!ruta || esFotoExterna(ruta)) return;
   const supabase = await crearClienteServidor();
   const { count } = await supabase
     .from("products")

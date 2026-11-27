@@ -16,7 +16,7 @@ import {
 } from "@/lib/acciones/pedidos";
 import type { EstadoAccion } from "@/lib/acciones/tipos";
 import type { ItemPedido, PedidoDetalle } from "@/lib/catalogo/datos";
-import { CATEGORIAS, urlFotoProducto } from "@/lib/catalogo/opciones";
+import { urlFotoProducto, type Categoria } from "@/lib/catalogo/opciones";
 import { pesos } from "@/lib/clientes/opciones";
 
 function Miniatura({ ruta }: { ruta: string | null | undefined }) {
@@ -130,6 +130,7 @@ function ResultadoBusqueda({ pedidoId, producto }: { pedidoId: string; producto:
   const [cantidad, setCantidad] = useState("1");
   const [agregando, iniciar] = useTransition();
   const [mensaje, setMensaje] = useState<EstadoAccion>({});
+  const sinPrecio = producto.price <= 0;
 
   const agregar = () =>
     iniciar(async () => {
@@ -145,36 +146,42 @@ function ResultadoBusqueda({ pedidoId, producto }: { pedidoId: string; producto:
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold break-words">{producto.name}</p>
           <p className="text-xs text-ink-soft tabular-nums">
-            {producto.sku} · {pesos(producto.price)}
+            {producto.sku} · {sinPrecio ? "Sin precio" : pesos(producto.price)}
           </p>
         </div>
         <InsigniaStock stock={producto.stock} />
       </div>
-      <div className="flex items-center gap-2">
-        <label className="sr-only" htmlFor={`agr-${producto.id}`}>Cantidad de {producto.name}</label>
-        <input
-          id={`agr-${producto.id}`}
-          inputMode="numeric"
-          value={cantidad}
-          onChange={(e) => setCantidad(e.target.value.replace(/\D/g, ""))}
-          className="h-10 w-20 rounded-lg border border-line text-center text-base tabular-nums outline-none focus:border-ink"
-        />
-        <button
-          type="button"
-          onClick={agregar}
-          disabled={agregando}
-          className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-ink px-3 text-sm font-semibold text-paper hover:bg-ink/85 disabled:opacity-60"
-        >
-          {agregando ? <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden /> : <Plus className="size-4" aria-hidden />}
-          Agregar al pedido
-        </button>
-      </div>
+      {sinPrecio ? (
+        <p className="rounded-lg bg-mist px-3 py-2 text-xs text-ink-soft">
+          Todavía no tiene precio, así que no se puede agregar. El administrador se lo pone en el catálogo.
+        </p>
+      ) : (
+        <div className="flex items-center gap-2">
+          <label className="sr-only" htmlFor={`agr-${producto.id}`}>Cantidad de {producto.name}</label>
+          <input
+            id={`agr-${producto.id}`}
+            inputMode="numeric"
+            value={cantidad}
+            onChange={(e) => setCantidad(e.target.value.replace(/\D/g, ""))}
+            className="h-10 w-20 rounded-lg border border-line text-center text-base tabular-nums outline-none focus:border-ink"
+          />
+          <button
+            type="button"
+            onClick={agregar}
+            disabled={agregando}
+            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-ink px-3 text-sm font-semibold text-paper hover:bg-ink/85 disabled:opacity-60"
+          >
+            {agregando ? <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" aria-hidden /> : <Plus className="size-4" aria-hidden />}
+            Agregar al pedido
+          </button>
+        </div>
+      )}
       <Mensaje estado={mensaje} />
     </li>
   );
 }
 
-function BuscadorProductos({ pedidoId }: { pedidoId: string }) {
+function BuscadorProductos({ pedidoId, categorias }: { pedidoId: string; categorias: Categoria[] }) {
   const [texto, setTexto] = useState("");
   const [categoria, setCategoria] = useState("");
   const [resultados, setResultados] = useState<ProductoEncontrado[] | null>(null);
@@ -199,16 +206,16 @@ function BuscadorProductos({ pedidoId }: { pedidoId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_11rem]">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_14rem]">
         <div className="relative">
-          <label htmlFor="buscar-producto" className="sr-only">Buscar producto por nombre, código o línea</label>
+          <label htmlFor="buscar-producto" className="sr-only">Buscar producto por nombre, código o medida</label>
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-soft" aria-hidden />
           <input
             id="buscar-producto"
             type="search"
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
-            placeholder="Nombre, código o línea"
+            placeholder="Nombre, código o medida"
             className="h-11 w-full rounded-xl border border-line bg-paper pr-3 pl-9 text-base outline-none focus:border-ink focus:ring-2 focus:ring-brand/15"
           />
         </div>
@@ -219,9 +226,9 @@ function BuscadorProductos({ pedidoId }: { pedidoId: string }) {
           onChange={(e) => setCategoria(e.target.value)}
           className="h-11 rounded-xl border border-line bg-paper px-3 text-base outline-none focus:border-ink sm:text-sm"
         >
-          <option value="">Todas</option>
-          {Object.entries(CATEGORIAS).map(([valor, nombre]) => (
-            <option key={valor} value={valor}>{nombre}</option>
+          <option value="">Todas las categorías</option>
+          {categorias.map((c) => (
+            <option key={c.slug} value={c.slug}>{c.name}</option>
           ))}
         </select>
       </div>
@@ -328,7 +335,15 @@ function FormularioNotas({ pedido, editable }: { pedido: PedidoDetalle; editable
   );
 }
 
-export function EditorPedido({ pedido, puedeEditar }: { pedido: PedidoDetalle; puedeEditar: boolean }) {
+export function EditorPedido({
+  pedido,
+  puedeEditar,
+  categorias,
+}: {
+  pedido: PedidoDetalle;
+  puedeEditar: boolean;
+  categorias: Categoria[];
+}) {
   const editable = puedeEditar && pedido.status === "borrador";
   const unidades = pedido.items.reduce((suma, i) => suma + i.quantity, 0);
 
@@ -351,7 +366,7 @@ export function EditorPedido({ pedido, puedeEditar }: { pedido: PedidoDetalle; p
         {editable && (
           <section className="rounded-xl border border-line p-4 sm:p-5">
             <h2 className="mb-3 font-semibold">Agregar productos</h2>
-            <BuscadorProductos pedidoId={pedido.id} />
+            <BuscadorProductos pedidoId={pedido.id} categorias={categorias} />
           </section>
         )}
       </div>

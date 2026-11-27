@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Package } from "lucide-react";
 import { FormularioProducto } from "@/components/catalogo/formulario-producto";
+import { listarCategorias } from "@/lib/catalogo/datos";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 
 export const metadata: Metadata = { title: "Nuevo producto" };
 
 export default async function NuevoProducto() {
-  const yo = await obtenerUsuarioActual();
+  const [yo, categorias] = await Promise.all([obtenerUsuarioActual(), listarCategorias()]);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
@@ -27,7 +28,7 @@ export default async function NuevoProducto() {
             Cada medida es un producto con su propio código, precio y stock. Al crearlo podrás subir su foto.
           </p>
           <section className="mt-8 rounded-xl border border-line p-4 sm:p-6">
-            <FormularioProducto />
+            <FormularioProducto categorias={categorias} />
           </section>
         </>
       )}

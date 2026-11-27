@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { InsigniaPedido } from "@/components/catalogo/insignias";
 import { EditorPedido } from "@/components/pedidos/editor";
-import { obtenerPedido } from "@/lib/catalogo/datos";
+import { listarCategorias, obtenerPedido } from "@/lib/catalogo/datos";
 import { nombrePlazo } from "@/lib/clientes/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 
@@ -20,7 +20,7 @@ const formatoFecha = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", tim
 
 export default async function PaginaPedido({ params }: Props) {
   const { id } = await params;
-  const [yo, pedido] = await Promise.all([obtenerUsuarioActual(), obtenerPedido(id)]);
+  const [yo, pedido, categorias] = await Promise.all([obtenerUsuarioActual(), obtenerPedido(id), listarCategorias()]);
   if (!pedido) notFound();
   const puedeEditar = yo?.rol === "admin" || yo?.id === pedido.user_id;
 
@@ -48,7 +48,7 @@ export default async function PaginaPedido({ params }: Props) {
       </p>
 
       <div className="mt-8">
-        <EditorPedido pedido={pedido} puedeEditar={puedeEditar} />
+        <EditorPedido pedido={pedido} puedeEditar={puedeEditar} categorias={categorias} />
       </div>
     </div>
   );

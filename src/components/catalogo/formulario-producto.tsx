@@ -11,13 +11,13 @@ import {
 import { guardarProducto } from "@/lib/acciones/productos";
 import type { EstadoAccion } from "@/lib/acciones/tipos";
 import type { Producto } from "@/lib/catalogo/datos";
-import { CATEGORIAS } from "@/lib/catalogo/opciones";
+import type { Categoria } from "@/lib/catalogo/opciones";
 
-const opcionesCategoria = Object.entries(CATEGORIAS).map(([valor, nombre]) => ({ valor, nombre }));
 const miles = new Intl.NumberFormat("es-CO");
 
-export function FormularioProducto({ producto }: { producto?: Producto }) {
+export function FormularioProducto({ producto, categorias }: { producto?: Producto; categorias: Categoria[] }) {
   const { estado, enviando, ref, alEnviar } = useFormularioAccion<EstadoAccion>(guardarProducto, {});
+  const opcionesCategoria = categorias.map((c) => ({ valor: c.slug, nombre: c.name }));
 
   return (
     <form ref={ref} onSubmit={alEnviar} noValidate className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -30,7 +30,7 @@ export function FormularioProducto({ producto }: { producto?: Producto }) {
         <Campo id="prod-nombre" etiqueta="Nombre" name="name" defaultValue={producto?.name ?? ""} maxLength={200} ayuda="Si lo dejas vacío, se arma con la línea y la medida." />
       </div>
       <Campo id="prod-marca" etiqueta="Marca" name="brand" defaultValue={producto?.brand ?? ""} maxLength={60} placeholder="Ej.: IMCOV" />
-      <Campo id="prod-precio" etiqueta="Precio con IVA (pesos) *" name="price" inputMode="numeric" defaultValue={producto ? miles.format(producto.price) : ""} maxLength={15} required placeholder="25.000" />
+      <Campo id="prod-precio" etiqueta="Precio con IVA (pesos)" name="price" inputMode="numeric" defaultValue={producto && producto.price > 0 ? miles.format(producto.price) : ""} maxLength={15} placeholder="Sin precio" ayuda="Si lo dejas vacío, queda sin precio y no se puede pedir." />
       <Campo id="prod-stock" etiqueta="Stock (unidades) *" name="stock" inputMode="numeric" defaultValue={producto?.stock?.toString() ?? "0"} maxLength={7} required />
       <label htmlFor="prod-activo" className="flex min-h-12 cursor-pointer items-center gap-2 self-end text-sm font-medium">
         <input id="prod-activo" type="checkbox" name="active" defaultChecked={producto?.active ?? true} className="size-5 accent-brand" />

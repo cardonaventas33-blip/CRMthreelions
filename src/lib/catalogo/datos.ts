@@ -1,9 +1,10 @@
 import "server-only";
 import { cache } from "react";
 import {
-  CATEGORIAS,
+  PATRON_CATEGORIA,
+  palabrasDeBusqueda,
   valorMedida,
-  type CategoriaProducto,
+  type Categoria,
   type EstadoPedido,
 } from "@/lib/catalogo/opciones";
 import { crearClienteServidor } from "@/lib/supabase/server";
@@ -12,7 +13,7 @@ export type Producto = {
   id: string;
   name: string;
   sku: string;
-  category: CategoriaProducto;
+  category: string;
   line: string | null;
   size: string | null;
   brand: string | null;
@@ -21,34 +22,50 @@ export type Producto = {
   photo_url: string | null;
   description: string | null;
   active: boolean;
+  source: string | null;
 };
 
-const CAMPOS_PRODUCTO = "id, name, sku, category, line, size, brand, price, stock, photo_url, description, active";
+const CAMPOS_PRODUCTO = "id, name, sku, category, line, size, brand, price, stock, photo_url, description, active, source";
 
-function limpiar(texto: string) {
-  return texto.replace(/[,()*%\\]/g, " ").trim().slice(0, 60);
-}
+// Categorías del catálogo en su orden (las mismas para toda la página)
+export const listarCategorias = cache(async (): Promise<Categoria[]> => {
+  const supabase = await crearClienteServidor();
+  const { data } = await supabase
+    .from("product_categories")
+    .select("slug, name, family, position")
+    .order("position", { ascending: true })
+    .order("name", { ascending: true });
+  return (data ?? []) as Categoria[];
+});
 
-const ordenCategoria = Object.keys(CATEGORIAS);
-
-// Orden del catálogo: categoría, línea, medida de menor a mayor, nombre
+// La base ordena por categoría, línea y nombre. Aquí solo se ordenan las medidas
+// dentro de una misma línea, para que 9" quede antes que 10"
 export function ordenarProductos(productos: Producto[]) {
-  return [...productos].sort(
-    (a, b) =>
-      ordenCategoria.indexOf(a.category) - ordenCategoria.indexOf(b.category) ||
-      (a.line ?? a.name).localeCompare(b.line ?? b.name, "es") ||
-      valorMedida(a.size) - valorMedida(b.size) ||
-      a.name.localeCompare(b.name, "es"),
-  );
+  return productos
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) =>
+      a.p.line && a.p.category === b.p.category && a.p.line === b.p.line
+        ? valorMedida(a.p.size) - valorMedida(b.p.size) || a.i - b.i
+        : a.i - b.i,
+    )
+    .map(({ p }) => p);
 }
 
 export const POR_PAGINA = 60;
 
 // Catálogo por páginas (puede tener miles de productos)
+// Cuántos productos no tienen precio todavía (el administrador los completa)
+export async function contarSinPrecio() {
+  const supabase = await crearClienteServidor();
+  const { count } = await supabase.from("products").select("id", { count: "exact", head: true }).eq("price", 0);
+  return count ?? 0;
+}
+
 export async function listarProductos(filtros: {
   q?: string;
   categoria?: string;
   incluirInactivos?: boolean;
+  soloSinPrecio?: boolean;
   pagina?: number;
 }) {
   const supabase = await crearClienteServidor();
@@ -62,10 +79,11 @@ export async function listarProductos(filtros: {
     .order("line", { ascending: true, nullsFirst: false })
     .order("name", { ascending: true })
     .range(desde, desde + POR_PAGINA - 1);
-  const q = limpiar(filtros.q ?? "");
-  if (q) consulta = consulta.or(`name.ilike.%${q}%,sku.ilike.%${q}%,line.ilike.%${q}%`);
-  if (filtros.categoria && filtros.categoria in CATEGORIAS) consulta = consulta.eq("category", filtros.categoria);
+  // Busca sin tildes en nombre, código, línea, medida y marca; cada palabra debe aparecer
+  for (const palabra of palabrasDeBusqueda(filtros.q ?? "")) consulta = consulta.ilike("search", `%${palabra}%`);
+  if (filtros.categoria && PATRON_CATEGORIA.test(filtros.categoria)) consulta = consulta.eq("category", filtros.categoria);
   if (!filtros.incluirInactivos) consulta = consulta.eq("active", true);
+  if (filtros.soloSinPrecio) consulta = consulta.eq("price", 0);
 
   const { data, count, error } = await consulta;
   const productos = ((data ?? []) as Producto[]).map((p) => ({ ...p, price: Number(p.price) }));

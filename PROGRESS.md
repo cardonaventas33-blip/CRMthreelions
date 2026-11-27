@@ -4,9 +4,10 @@
 
 ## Fase actual
 **Fase 3: Catálogo y pedidos — HECHA en el computador (26-nov-2026), falta publicarla.**
-Probada de punta a punta con productos y un pedido de prueba (creados y borrados con los botones de la app; la base
-quedó vacía y la numeración de pedidos empieza en #1). Falta: (1) permiso del dueño para publicar y (2) decidir cómo
-cargar el catálogo real (ver "Catálogo de IMCOVALLE" abajo). Después: "sigue" para la Fase 4.
+Probada de punta a punta (los datos de prueba se borraron; la numeración de pedidos empieza en #1).
+El catálogo ya tiene las 18 categorías y las **59 plumillas IMCOV** del dueño (sin precio y con stock 0).
+Falta: (1) permiso del dueño para publicar, (2) la autorización escrita de IMCOVALLE para copiar su catálogo
+(el copiador ya está listo) y (3) que el dueño ponga precios y stock. Después: "sigue" para la Fase 4.
 
 ## Hecho en la Fase 3
 - [x] Migración `20261127030000_fase3_catalogo_pedidos.sql` (aplicada): productos con línea, medida y marca;
@@ -29,19 +30,45 @@ cargar el catálogo real (ver "Catálogo de IMCOVALLE" abajo). Después: "sigue"
   cantidad, aviso de stock, notas, enviar, intento de completar sin stock (bloqueado), volver a borrador, borrar
   pedido, borrar producto (bloqueado mientras estaba en un pedido). El tablero mostró la venta mientras estuvo enviado.
 - [x] Arreglo: en la ficha del cliente ya no sale una barrita de desplazamiento junto a las pestañas.
+- [x] Migración `20261127050000_catalogo_categorias_busqueda.sql` (aplicada): tabla `product_categories` con 18
+  categorías (las 16 de IMCOVALLE + Plumillas + Baterías de carro), cada una con su grupo para el tablero
+  (llantas, baterías, plumillas u otros); `products.category` ligado a esa tabla; origen de productos copiados
+  (`source`, `source_id`: solo los escribe el copiador); fotos con dirección https; búsqueda sin tildes
+  (columna `search` calculada sola + índice). 11 de 11 pruebas OK.
+- [x] Migración `20261127060000_pedidos_sin_precio.sql` (aplicada): un producto sin precio (0) no se puede agregar
+  a un pedido; la base avisa "… todavía no tiene precio". 2 de 2 pruebas OK.
+- [x] Catálogo: filtro con las 18 categorías; búsqueda sin tildes y por palabras ("bateria akt" encuentra
+  "Batería … AKT"); "Sin precio" en vez de $ 0; para el admin, aviso de cuántos productos no tienen precio y casilla
+  "Solo productos sin precio". En el formulario el precio es opcional (vacío = sin precio).
+- [x] Pedidos: el buscador muestra "Sin precio" y no deja agregar esos productos.
+- [x] Tablero: ventas por tipo de producto (Llantas, Baterías, Plumillas y Otros productos).
+- [x] **Plumillas IMCOV montadas (59)** con `scripts/cargar-plumillas.mjs`: Multiacople Trasera 10" a 16",
+  y Multiacople Delantera, Metálica, Aerodinámica De Lujo y Siliconada de 14" a 26" (cada pulgada). Códigos
+  `PLU-MAT-10`, `PLU-MAD-14`, `PLU-MET-14`, `PLU-AER-14`, `PLU-SIL-14`…; foto por línea en el almacén
+  `productos/lineas/`; marca IMCOV; descripción con los milímetros; sin precio y stock 0.
+- [x] Copiador de IMCOVALLE listo (`scripts/imcovalle.mjs`). Probado leyendo 1 página y cargando 3 productos
+  inventados (`datos/prueba/productos.json`), que luego se borraron. **No se ha copiado nada de IMCOVALLE.**
 
 ## Pendiente de la Fase 3
 - [ ] Publicar en Vercel (con permiso del dueño).
-- [ ] Cargar el catálogo real (ver abajo).
-- [ ] Subir las 5 fotos de `fotos-catalogo/` cuando existan las plumillas en el catálogo.
+- [ ] Autorización escrita de IMCOVALLE. Con ella: `node scripts/imcovalle.mjs copiar --autorizado`
+  (unos 15–20 minutos) y después `node scripts/imcovalle.mjs cargar` (primero se puede usar `--simular`).
+- [ ] El dueño pone precios y stock (hoy todo dice "Sin precio" y "Agotado").
 
-## Catálogo de IMCOVALLE (investigado el 26-nov-2026; no se ha cargado nada)
-- El dueño dijo que el catálogo es de IMCOVALLE (https://imcovalle.com), "Importadora y Comercializadora del Valle", Cali.
-- El sitio muestra unos 19.500 productos (llantas de moto y carro, baterías de moto, kits de arrastre, aceites,
-  frenos, repuestos…). Precios con IVA incluido. No muestra códigos (SKU). No se vio una categoría de plumillas.
-- Las fotos tienen direcciones tipo `https://imcovalle.com/catalog-img/{id}/0-480.webp`.
-- Falta que el dueño decida: qué categorías cargar, si tiene permiso de IMCOVALLE para usar sus datos y fotos, y si
-  IMCOVALLE le puede dar un Excel (es lo más confiable) en vez de copiar del sitio.
+## Catálogo de IMCOVALLE (revisado el 26-nov-2026; NO se ha copiado nada)
+- El dueño dijo que el catálogo es de IMCOVALLE (https://imcovalle.com), "Importadora y Comercializadora del Valle",
+  Cali, y que vende todo. Decidió copiarlo de la página, **sin precios ni existencias** (los pone él).
+- Sus términos (punto 6, Propiedad Intelectual) prohíben reproducir textos e imágenes sin autorización escrita.
+  El dueño la va a pedir; el copiador no copia sin la palabra `--autorizado`.
+- `robots.txt` deja leer las páginas públicas pero no `/api/`; el copiador solo usa páginas públicas y el mapa del sitio.
+- 17.610 productos (mapa del sitio) en 16 categorías: llantas-moto, llantas-carro, rines, baterias-moto, aceites,
+  aditivos, kits-arrastre, frenos, amortiguadores, luces, repuestos-motor, repuestos-honda, accesorios, maleteros,
+  en-tienda (para recoger en Cali, 1.880) y otros (4.415). No tiene plumillas.
+- Cómo copia: recorre `/productos?sort=name_asc&page=N` (24 por página, unas 734 páginas, de a 2 con pausas) y lee
+  los datos que cada página trae escondidos (`self.__next_f`): código interno, nombre, categoría y foto. Luego
+  revisa el mapa del sitio y completa uno por uno los que falten.
+- Al cargar: código `IMC-` + comienzo de su código interno; fotos mostradas desde su página (no se copian a nuestro
+  almacén); **los productos que ya están en el CRM no se tocan** (ni nombre, ni categoría, ni precio, ni stock).
 
 ## Fase 2: Clientes y documentos — TERMINADA (26-nov-2026)
 El dueño creó su primer cliente real en la página publicada y le subió RUT, Cámara de Comercio (PDF) y foto (JPG);
@@ -103,7 +130,8 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 
 ## Pendiente de tu parte
 - Dar permiso para publicar la Fase 3.
-- Decidir cómo cargar el catálogo (IMCOVALLE: qué categorías, si hay permiso, si te pueden dar un Excel).
+- Pedir a IMCOVALLE la autorización escrita (un correo sirve) para copiar su catálogo. Si te dan un Excel, mejor.
+- Poner precios y stock a los productos (empezando por las 59 plumillas).
 - Cuando quieras: crear las cuentas de tu equipo de ventas desde "Usuarios".
 - Más adelante: fotos de llantas y baterías en sus carpetas de `fotos-catalogo/`.
 
@@ -116,6 +144,10 @@ El dueño entró con su usuario administrador en la página publicada (https://c
   la usa es administrador y no deja que alguien se quite su propio rol de administrador.
 - **Catálogo (Fase 3, elegido por el dueño):** cada medida es un producto con su propio SKU, precio y stock
   (agrupados por línea). Los precios del catálogo ya incluyen IVA. Al completar un pedido, el stock se descuenta solo.
+- **Catálogo sin precio (26-nov):** el catálogo se monta sin precios y con stock 0; el dueño los pone después.
+  Sin precio no se puede pedir. "Sin precio" = precio 0 en la base.
+- **Categorías:** viven en la tabla `product_categories` (no en el código). Cada una tiene un grupo para el tablero.
+- **Copiador:** solo agrega productos nuevos; nunca cambia lo que ya está en el CRM (el dueño organiza a su gusto).
 - **Pedidos:** número consecutivo automático (#1, #2…). Las ventas del tablero cuentan pedidos enviados y completados.
   Un vendedor ve todos los pedidos, pero solo cambia los suyos; el admin cambia todos.
 - Carpeta del proyecto: `Documentos\Proyectos\crm-three-lions`. Repositorio: `CRMthreelions` (cuenta cardonaventas33-blip). Rama: `main`.
@@ -131,8 +163,8 @@ El dueño entró con su usuario administrador en la página publicada (https://c
   decidir entre Vercel Pro (unos 20 USD al mes) u otro servicio que permita uso comercial gratis.
 - **Publicar:** antes de subir cambios a GitHub (y por lo tanto a la página pública), Claude pregunta al dueño.
 
-## Líneas de plumillas que mostró el dueño (marca IMCOV)
-Cada línea viene en varias medidas (decidido: cada medida es un producto distinto):
+## Líneas de plumillas del dueño (marca IMCOV) — ya están en el catálogo
+Cada medida es un producto distinto (cada pulgada del rango, 59 en total):
 
 | Línea | Medidas | Foto |
 |---|---|---|
@@ -168,7 +200,13 @@ Cada línea viene en varias medidas (decidido: cada medida es un producto distin
   `git credential-manager github login --device` en el panel Terminal.
 - Pegar claves o contraseñas: lo que funciona con el dueño es una ventana de PowerShell aparte
   (`scripts\guardar-claves.ps1`, `scripts\crear-admin.ps1`). El portapapeles a veces queda bloqueado en Windows.
-- Antes de `npm run build` hay que detener el servidor de desarrollo (ambos usan `.next`).
+- Antes de `npm run build` hay que detener el servidor de desarrollo (ambos usan `.next`). Después de compilar,
+  el servidor de desarrollo a veces se cierra con "EINVAL … readlink" (OneDrive y la carpeta `.next`):
+  basta con arrancarlo otra vez.
+- Programas con la clave secreta (leen `.env.local` sin mostrarla): `scripts/cargar-plumillas.mjs` y
+  `scripts/imcovalle.mjs`. Ambos se pueden correr varias veces sin repetir productos; `--simular` no cambia nada.
+- Búsqueda: la columna `products.search` se calcula sola (nombre + código + línea + medida + marca, sin tildes).
+  En el código, `palabrasDeBusqueda()` limpia lo que escribe la persona igual que la base.
 - En Windows, los scripts de Node que se conectan a internet terminan con `process.exitCode`, no con `process.exit()`.
 
 ## Limpieza pendiente (con tu permiso)
