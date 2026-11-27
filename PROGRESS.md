@@ -3,9 +3,9 @@
 > Si en otra sesión escribes "continúa", Claude lee este archivo y `docs/PLANO.md` y sigue desde aquí.
 
 ## Fase actual
-**Fase 2: Clientes y documentos — publicada (26-nov-2026).**
-La página de Clientes carga bien en la versión publicada. Falta solo que el dueño cree su primer cliente real
-y le suba un documento (la subida de archivos es lo único que no se ha probado con un archivo de verdad).
+**Fase 2: Clientes y documentos — TERMINADA (26-nov-2026).**
+El dueño creó su primer cliente real en la página publicada y le subió RUT, Cámara de Comercio (PDF) y foto (JPG);
+también registró un contacto y una interacción. Todo quedó en la base y en el almacén privado.
 Siguiente: **Fase 3: Catálogo y pedidos** (espera el "sigue"). Para esa fase sirve la lista de productos
 (nombre, SKU, categoría, precio, stock), por ejemplo en Excel.
 
@@ -32,8 +32,8 @@ Siguiente: **Fase 3: Catálogo y pedidos** (espera el "sigue"). Para esa fase si
 
 ## Pendiente de la Fase 2
 - [x] Publicada en Vercel (26-nov-2026), con permiso del dueño.
-- [ ] El dueño crea su primer cliente real y le sube un documento (por ejemplo el RUT) en la página publicada.
-  Para comprobarlo: contar filas en `clients` y archivos en `storage.objects` (bucket `clientes`).
+- [x] El dueño creó su primer cliente real y le subió documentos en la página publicada (comprobado en la base:
+  1 cliente, RUT + Cámara de Comercio + foto en el almacén, 1 contacto, 1 interacción).
 
 ## Fase 1: Autenticación y estructura de datos — TERMINADA (26-nov-2026)
 El dueño entró con su usuario administrador en la página publicada (https://cr-mthreelions.vercel.app).
