@@ -38,7 +38,7 @@ export default async function Usuarios() {
         Crea las cuentas de tu equipo y decide qué puede hacer cada persona.
       </p>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
         <section aria-labelledby="titulo-equipo" className="rounded-xl border border-line">
           <h2 id="titulo-equipo" className="border-b border-line px-4 py-3 font-semibold sm:px-5">
             Equipo ({perfiles.length})

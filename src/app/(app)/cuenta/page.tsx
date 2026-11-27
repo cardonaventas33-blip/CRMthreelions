@@ -18,7 +18,7 @@ export default async function MiCuenta() {
         {yo.correo} · {NOMBRE_ROL[yo.rol]}
       </p>
 
-      <div className="mt-8 grid gap-6 md:grid-cols-2 md:items-start">
+      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
         <section aria-labelledby="titulo-nombre" className="rounded-xl border border-line p-4 sm:p-5">
           <h2 id="titulo-nombre" className="flex items-center gap-2 font-semibold">
             <UserRound className="size-5 text-brand" aria-hidden />

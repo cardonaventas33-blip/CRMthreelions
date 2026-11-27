@@ -106,7 +106,7 @@ export function Calendario() {
     : " ";
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
       <section aria-label="Calendario" className="overflow-hidden rounded-xl border border-line">
         {/* Mes visible y botones para moverse */}
         <div className="flex items-center gap-1 border-b border-line px-2 py-2 sm:px-4">

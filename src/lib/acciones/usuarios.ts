@@ -9,6 +9,14 @@ import { crearClienteServidor } from "@/lib/supabase/server";
 
 const SOLO_ADMIN = "Solo un administrador puede hacer esto.";
 
+// Supabase rechaza la clave secreta (401/403): casi siempre está mal copiada en Vercel
+const CLAVE_SECRETA_MALA =
+  "Supabase no aceptó la clave secreta del servidor. Revisa SUPABASE_SECRET_KEY en Vercel (pestaña Proyecto).";
+
+function rechazoPorClave(error: { status?: number }) {
+  return error.status === 401 || error.status === 403;
+}
+
 async function esAdmin() {
   const yo = await obtenerUsuarioActual();
   return yo?.rol === "admin";
@@ -53,6 +61,7 @@ export async function crearUsuario(_antes: EstadoAccion, datos: FormData): Promi
       return { error: "Esa contraseña es muy débil. Usa una más larga o con números." };
     }
     if (error.code === "email_exists") return { error: "Ya existe un usuario con ese correo." };
+    if (rechazoPorClave(error)) return { error: CLAVE_SECRETA_MALA };
     return { error: "No se pudo crear el usuario. Intenta de nuevo." };
   }
 
@@ -123,12 +132,11 @@ export async function asignarContrasena(
     password: r.data.contrasena,
   });
   if (error) {
-    return {
-      error:
-        error.code === "weak_password"
-          ? "Esa contraseña es muy débil. Usa una más larga o con números."
-          : "No se pudo cambiar la contraseña.",
-    };
+    if (error.code === "weak_password") {
+      return { error: "Esa contraseña es muy débil. Usa una más larga o con números." };
+    }
+    if (rechazoPorClave(error)) return { error: CLAVE_SECRETA_MALA };
+    return { error: "No se pudo cambiar la contraseña." };
   }
   return { ok: "Contraseña cambiada. Compártela con la persona por un medio seguro." };
 }
