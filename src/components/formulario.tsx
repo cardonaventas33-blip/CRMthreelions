@@ -10,6 +10,8 @@ import {
   type FormEvent,
   type InputHTMLAttributes,
   type ReactNode,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
 } from "react";
 import { useFormStatus } from "react-dom";
 import { Check, Eye, EyeOff, LoaderCircle } from "lucide-react";
@@ -58,6 +60,62 @@ export function Campo({ etiqueta, ayuda, id, ...resto }: PropsCampo) {
       </label>
       <input id={idCampo} className={claseEntrada} {...resto} />
       {ayuda && <p className="text-xs text-ink-soft">{ayuda}</p>}
+    </div>
+  );
+}
+
+// Texto largo (observaciones, notas)
+export function CampoArea({
+  etiqueta,
+  ayuda,
+  id,
+  ...resto
+}: TextareaHTMLAttributes<HTMLTextAreaElement> & { etiqueta: string; ayuda?: string }) {
+  const idAuto = useId();
+  const idCampo = id ?? idAuto;
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={idCampo} className="text-sm font-medium">
+        {etiqueta}
+      </label>
+      <textarea
+        id={idCampo}
+        rows={3}
+        className="w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors focus:border-ink focus:ring-2 focus:ring-brand/15"
+        {...resto}
+      />
+      {ayuda && <p className="text-xs text-ink-soft">{ayuda}</p>}
+    </div>
+  );
+}
+
+// Lista desplegable con su etiqueta
+export function CampoLista({
+  etiqueta,
+  opciones,
+  vacio,
+  id,
+  ...resto
+}: SelectHTMLAttributes<HTMLSelectElement> & {
+  etiqueta: string;
+  opciones: readonly { valor: string; nombre: string }[];
+  vacio?: string;
+}) {
+  const idAuto = useId();
+  const idCampo = id ?? idAuto;
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={idCampo} className="text-sm font-medium">
+        {etiqueta}
+      </label>
+      <select id={idCampo} className={claseEntrada} {...resto}>
+        {vacio !== undefined && <option value="">{vacio}</option>}
+        {opciones.map((o) => (
+          <option key={o.valor} value={o.valor}>
+            {o.nombre}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

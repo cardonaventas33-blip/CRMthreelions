@@ -14,7 +14,10 @@
   --color-brand: #c8102e; /* rojo de las carpetas y botones */
   --color-brand-dark: #9b0c22; /* rojo oscuro: pestaña de la carpeta, botón presionado */
   --color-brand-soft: #fdeef0; /* rojo muy claro: fondos de avisos */
-  --color-ok: #15803d; /* verde: solo para el chulito de "listo" */
+  --color-ok: #15803d; /* verde: "listo", documento cargado, cliente validado */
+  --color-ok-soft: #e8f6ed; /* verde muy claro: fondo de insignias "listo" */
+  --color-warn: #b45309; /* ámbar: algo pendiente */
+  --color-warn-soft: #fdf3e3; /* ámbar muy claro: fondo de insignias "pendiente" */
 }
 
 /* Letras: Inter para todo el CRM; Cinzel (estilo del logo) solo para la marca */

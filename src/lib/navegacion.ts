@@ -43,6 +43,7 @@ export const grupos: GrupoMenu[] = [
         fase: 2,
         descripcion:
           "Crea y busca clientes por nombre o NIT, con su foto, RUT y Cámara de Comercio. En la ficha de cada cliente verás sus llamadas, reuniones y pedidos.",
+        paginaPropia: true,
       },
       {
         slug: "agenda",

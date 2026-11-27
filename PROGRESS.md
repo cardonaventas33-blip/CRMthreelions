@@ -3,9 +3,36 @@
 > Si en otra sesión escribes "continúa", Claude lee este archivo y `docs/PLANO.md` y sigue desde aquí.
 
 ## Fase actual
-**Fase 1: Autenticación y estructura de datos — TERMINADA (26-nov-2026).**
+**Fase 2: Clientes y documentos — construida y probada en el computador (26-nov-2026).**
+Falta publicarla (con permiso del dueño) y que él pruebe subir un documento real en la página publicada.
+
+## Hecho en la Fase 2 (el dueño pidió que fuera como su referencia: otro CRM comercial)
+- [x] Migración `20261127010000_fase2_clientes_sedes_contactos.sql` (aplicada): datos nuevos de la empresa
+  (nombre comercial, ciudad, tipo de negocio, empleados, plazo de pago, estado pendiente/validado/inactivo,
+  Tratamiento de datos), NIT/cédula único, tablas `client_sites` (sedes) y `client_contacts` (contactos),
+  y almacén privado `clientes` (máx. 10 MB, PDF o fotos; carpeta por cliente). 12 de 12 pruebas de permisos OK.
+- [x] `/clientes`: lista con buscador (razón social, nombre comercial o NIT) y filtros (ciudad, plazo, estado).
+  En computador es tabla como la referencia (estado, sedes, contactos, docs CC/RUT/TD, plazo,
+  "Actualizar información"); en celular son tarjetas.
+- [x] `/clientes/nuevo`: formulario de la empresa; al crear lleva a "Actualizar información".
+- [x] `/clientes/[id]/editar` ("Actualizar información"): datos de la empresa, documentos (Cámara de Comercio,
+  RUT, Tratamiento de datos y foto: subir, ver, cambiar, quitar), sedes (dirección, ciudad, tráfico, horario,
+  empleados, m², días de atención, productos que vende, foto), contactos (cargo, sede, comercial/cartera) y
+  validación (lista de lo que falta + marcar validado / pendiente / inactivo).
+- [x] `/clientes/[id]` (ficha): pestañas Datos / Interacciones / Pedidos. Contactos con botón de llamar y WhatsApp.
+  Interacciones: registrar llamada, reunión o correo con fecha y nota; historial con autor.
+- [x] Tablero (`/`) como la referencia: ventas, unidades, baterías, llantas y plumillas del mes en curso
+  comparadas con los mismos días del mes anterior (se llenan con pedidos enviados/completados, Fase 3),
+  resumen de clientes y últimos clientes.
+- [x] Probado en el computador con una empresa de prueba (creada y borrada): crear, sede, contacto,
+  interacción, ficha, lista en computador y celular. Falta probar la subida real de un archivo.
+
+## Pendiente de la Fase 2
+- [ ] Publicar en Vercel (pedir permiso).
+- [ ] El dueño prueba subir un documento (por ejemplo el RUT) en la página publicada.
+
+## Fase 1: Autenticación y estructura de datos — TERMINADA (26-nov-2026)
 El dueño entró con su usuario administrador en la página publicada (https://cr-mthreelions.vercel.app).
-Siguiente: **Fase 2: Clientes y documentos**. Espera el "sigue" del dueño.
 
 ## Hecho en la Fase 1
 - [x] Conector de Supabase conectado a Claude: crea tablas, revisa la seguridad y lee los registros.
@@ -26,12 +53,6 @@ Siguiente: **Fase 2: Clientes y documentos**. Espera el "sigue" del dueño.
 
 - [x] Página publicada funcionando con las claves de Vercel: el dueño entró con su usuario administrador.
 - [x] Crear usuarios desde la página publicada funciona: primer vendedor creado (26-nov-2026) con su rol correcto.
-
-## Lo que viene en la Fase 2 (según el plano)
-- Crear y editar clientes (nombre, NIT/RUT, contacto, teléfono, correo, dirección, notas), con validación en el servidor.
-- Subir la foto del cliente y sus documentos (RUT y Cámara de Comercio) a Supabase Storage, con permisos.
-- Lista de clientes con búsqueda por nombre o NIT, y ficha del cliente con pestañas Datos / Interacciones / Pedidos.
-- Listo cuando: se crea un cliente, se suben su foto y dos documentos, y se ven en la ficha.
 
 ## Hecho en la Fase 0
 - [x] Proyecto Next.js 15 (TypeScript + Tailwind + App Router) en `C:\Users\cardo\OneDrive\Documentos\Proyectos\crm-three-lions`.
