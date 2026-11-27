@@ -271,7 +271,7 @@ function AccionesEstado({ pedido }: { pedido: PedidoDetalle }) {
             type="button"
             disabled={pendiente || pedido.items.length === 0}
             onClick={() => cambiar("enviado")}
-            className={`${boton} bg-brand text-white hover:bg-brand-dark`}
+            className={`${boton} bg-brand text-on-brand hover:bg-brand-dark`}
           >
             Enviar pedido
           </button>
@@ -300,7 +300,7 @@ function AccionesEstado({ pedido }: { pedido: PedidoDetalle }) {
             type="button"
             disabled={pendiente}
             onClick={() => cambiar("completado", "Al completar el pedido se descuentan las cantidades del stock. ¿Continuar?")}
-            className={`${boton} bg-brand text-white hover:bg-brand-dark`}
+            className={`${boton} bg-brand text-on-brand hover:bg-brand-dark`}
           >
             Marcar como completado
           </button>

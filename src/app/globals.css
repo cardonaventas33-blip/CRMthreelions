@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
+/* El modo oscuro se activa con la clase "dark" en <html> (la pone el selector de apariencia del menú) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
   Colores del CRM Three Lions (elegidos por el dueño):
   fondo blanco, letras negras y carpetas rojas.
   El logo conserva sus colores originales (azul marino y dorado).
+  Todo el CRM usa estos nombres; el modo oscuro solo cambia sus valores (más abajo).
 */
 @theme {
   --color-paper: #ffffff; /* fondo blanco */
@@ -14,6 +18,7 @@
   --color-brand: #c8102e; /* rojo de las carpetas y botones */
   --color-brand-dark: #9b0c22; /* rojo oscuro: pestaña de la carpeta, botón presionado */
   --color-brand-soft: #fdeef0; /* rojo muy claro: fondos de avisos */
+  --color-on-brand: #ffffff; /* letra encima de los botones rojos */
   --color-ok: #15803d; /* verde: "listo", documento cargado, cliente validado */
   --color-ok-soft: #e8f6ed; /* verde muy claro: fondo de insignias "listo" */
   --color-warn: #b45309; /* ámbar: algo pendiente */
@@ -26,9 +31,31 @@
   --font-display: var(--font-cinzel), "Times New Roman", serif;
 }
 
-/* El CRM siempre se ve con fondo blanco, aunque el celular esté en modo oscuro */
+/* Modo claro (el normal) */
 :root {
   color-scheme: light;
+}
+
+/*
+  Modo oscuro: los mismos nombres con colores pensados para fondo oscuro.
+  El rojo se aclara para que se lea bien sobre negro; por eso la letra de los botones rojos pasa a ser oscura.
+  "color-scheme: dark" pone oscuras también las listas desplegables, calendarios y barras de desplazamiento.
+*/
+:root.dark {
+  color-scheme: dark;
+  --color-paper: #121110;
+  --color-ink: #f5f5f4;
+  --color-ink-soft: #a8a29e;
+  --color-line: #34302d;
+  --color-mist: #1f1c1a;
+  --color-brand: #f25a72;
+  --color-brand-dark: #f78a9c; /* en oscuro, el botón se aclara al pasar el mouse */
+  --color-brand-soft: #3a1520;
+  --color-on-brand: #1c0a0f;
+  --color-ok: #4ade80;
+  --color-ok-soft: #12301d;
+  --color-warn: #fbbf24;
+  --color-warn-soft: #352710;
 }
 
 body {

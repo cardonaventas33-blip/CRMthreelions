@@ -120,7 +120,7 @@ export default async function FichaCliente({ params, searchParams }: Props) {
         </div>
         <Link
           href={`/clientes/${cliente.id}/editar`}
-          className="inline-flex h-11 items-center rounded-xl bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-dark"
+          className="inline-flex h-11 items-center rounded-xl bg-brand px-4 text-sm font-semibold text-on-brand hover:bg-brand-dark"
         >
           Actualizar información
         </Link>

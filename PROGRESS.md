@@ -49,6 +49,15 @@ Falta: (1) la autorización escrita de IMCOVALLE para copiar su catálogo (el co
 - [x] Copiador de IMCOVALLE listo (`scripts/imcovalle.mjs`). Probado leyendo 1 página y cargando 3 productos
   inventados (`datos/prueba/productos.json`), que luego se borraron. **No se ha copiado nada de IMCOVALLE.**
 
+## Modo claro / oscuro (26-nov-2026, pedido por el dueño)
+- [x] En el menú, abajo ("Apariencia"): **Claro** (el normal), **Oscuro** y **Automático** (sigue al celular o
+  computador). Se guarda en cada aparato (navegador), no en la cuenta. Sin destello blanco al abrir.
+- [x] Colores del modo oscuro en `src/app/globals.css` (`:root.dark`): los mismos nombres (paper, ink, line, mist,
+  brand…) con valores para fondo oscuro. El rojo se aclara (#f25a72) para leerse sobre negro; por eso la letra de los
+  botones rojos usa el color nuevo `on-brand` (blanca en claro, oscura en oscuro).
+- [x] Probado en computador y celular: inicio, catálogo con fotos, agenda, formularios, menú del celular y el modo
+  Automático (cambia solo cuando el aparato cambia). Sin errores en la consola.
+
 ## Pendiente de la Fase 3
 - [x] Publicada en Vercel (26-nov-2026), con permiso del dueño.
 - [ ] Autorización escrita de IMCOVALLE. Con ella: `node scripts/imcovalle.mjs copiar --autorizado`
@@ -156,6 +165,9 @@ El dueño entró con su usuario administrador en la página publicada (https://c
   `SUPABASE_SECRET_KEY` (solo servidor). Supabase usa las claves nuevas `sb_publishable_` y `sb_secret_`.
 - **Colores:** fondo blanco, letras negras, rojo `#c8102e` de acento. El logo conserva azul marino y dorado.
   En el código: `bg-paper`, `text-ink`, `text-ink-soft`, `border-line`, `bg-mist`, `bg-brand`, `bg-brand-dark`, `bg-brand-soft`, `text-ok`.
+  Letra sobre botones rojos: `text-on-brand` (nunca `text-white`). No usar colores fijos (white, black, gray-…):
+  así el modo oscuro funciona solo. Excepción: el velo detrás del menú del celular (`bg-black/50`).
+- **Modo oscuro:** opcional; por defecto el CRM se ve claro (como lo diseñó el dueño).
 - **Navegación:** menú lateral con íconos y grupos (como la referencia del dueño), sin carpetas.
 - **Agenda:** lunes a sábado, sin domingos.
 - **Fotos del catálogo:** en `fotos-catalogo/`, fuera de GitHub; se suben al almacén `productos` de Supabase.

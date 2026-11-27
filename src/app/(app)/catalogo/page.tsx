@@ -57,7 +57,7 @@ export default async function Catalogo({ searchParams }: Props) {
             Nuevo pedido
           </Link>
           {esAdmin && (
-            <Link href="/catalogo/nuevo" className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 font-semibold text-white hover:bg-brand-dark">
+            <Link href="/catalogo/nuevo" className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 font-semibold text-on-brand hover:bg-brand-dark">
               <Plus className="size-5" aria-hidden />
               Nuevo producto
             </Link>

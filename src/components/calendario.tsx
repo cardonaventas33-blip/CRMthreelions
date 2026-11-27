@@ -180,7 +180,7 @@ export function Calendario() {
                     <span
                       className={`grid size-8 place-items-center rounded-full text-sm tabular-nums ${
                         esHoy
-                          ? "bg-brand font-semibold text-white"
+                          ? "bg-brand font-semibold text-on-brand"
                           : elegido
                             ? "font-semibold text-brand"
                             : delMes

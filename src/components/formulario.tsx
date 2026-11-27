@@ -169,7 +169,7 @@ export function BotonEnviar({
     <button
       type="submit"
       disabled={ocupado}
-      className={`flex h-12 items-center justify-center gap-2 rounded-xl bg-brand px-5 font-semibold text-white transition-colors hover:bg-brand-dark disabled:opacity-70 ${className}`}
+      className={`flex h-12 items-center justify-center gap-2 rounded-xl bg-brand px-5 font-semibold text-on-brand transition-colors hover:bg-brand-dark disabled:opacity-70 ${className}`}
     >
       {ocupado && (
         <LoaderCircle className="size-5 animate-spin motion-reduce:animate-none" aria-hidden />

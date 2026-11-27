@@ -51,7 +51,7 @@ export function ValidacionCliente({
 
       <div className="flex flex-wrap gap-2">
         {estado !== "validado" && (
-          <button type="button" disabled={pendiente} onClick={() => cambiar("validado")} className={`${claseBoton} bg-brand text-white hover:bg-brand-dark`}>
+          <button type="button" disabled={pendiente} onClick={() => cambiar("validado")} className={`${claseBoton} bg-brand text-on-brand hover:bg-brand-dark`}>
             Marcar como validado
           </button>
         )}

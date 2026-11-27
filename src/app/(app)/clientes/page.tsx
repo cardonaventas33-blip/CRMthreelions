@@ -26,7 +26,7 @@ export default async function Clientes({ searchParams }: Props) {
         </div>
         <Link
           href="/clientes/nuevo"
-          className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 font-semibold text-white transition-colors hover:bg-brand-dark"
+          className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 font-semibold text-on-brand transition-colors hover:bg-brand-dark"
         >
           <Plus className="size-5" aria-hidden />
           Nueva empresa
@@ -91,7 +91,7 @@ export default async function Clientes({ searchParams }: Props) {
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/clientes/${c.id}/editar`}
-                        className="inline-flex h-9 items-center rounded-lg bg-brand px-3 text-xs font-semibold whitespace-nowrap text-white hover:bg-brand-dark"
+                        className="inline-flex h-9 items-center rounded-lg bg-brand px-3 text-xs font-semibold whitespace-nowrap text-on-brand hover:bg-brand-dark"
                       >
                         Actualizar información
                       </Link>
@@ -135,7 +135,7 @@ export default async function Clientes({ searchParams }: Props) {
                   </Link>
                   <Link
                     href={`/clientes/${c.id}/editar`}
-                    className="flex h-10 flex-1 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-white hover:bg-brand-dark"
+                    className="flex h-10 flex-1 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-on-brand hover:bg-brand-dark"
                   >
                     Actualizar
                   </Link>

@@ -43,7 +43,7 @@ export default async function Pedidos({ searchParams }: Props) {
           </h1>
           <p className="mt-2 text-base text-ink-soft">Totales con IVA incluido.</p>
         </div>
-        <Link href="/pedidos/nuevo" className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 font-semibold text-white hover:bg-brand-dark">
+        <Link href="/pedidos/nuevo" className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-4 font-semibold text-on-brand hover:bg-brand-dark">
           <Plus className="size-5" aria-hidden />
           Nuevo pedido
         </Link>

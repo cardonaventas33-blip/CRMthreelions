@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown, LogOut, X } from "lucide-react";
+import { SelectorTema } from "@/components/selector-tema";
 import { cerrarSesion } from "@/lib/acciones/sesion";
 import { grupos, inicio } from "@/lib/navegacion";
 import { iniciales, NOMBRE_ROL, type UsuarioVisible } from "@/lib/roles";
@@ -148,7 +149,9 @@ export function MenuLateral({ usuario, onCerrar }: Props) {
       </nav>
 
       <div className="border-t border-line px-3 py-3">
-        <form action={cerrarSesion}>
+        <p className="px-1 pb-1.5 text-xs font-semibold tracking-wider text-ink-soft uppercase">Apariencia</p>
+        <SelectorTema />
+        <form action={cerrarSesion} className="mt-2">
           <button
             type="submit"
             className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-[15px] text-ink transition-colors hover:bg-mist"
