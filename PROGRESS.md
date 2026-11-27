@@ -3,10 +3,11 @@
 > Si en otra sesión escribes "continúa", Claude lee este archivo y `docs/PLANO.md` y sigue desde aquí.
 
 ## Fase actual
-**Fase 4: Agenda y comunicación — HECHA en el computador (27-nov-2026), falta publicarla.**
-El dueño ya creó su primera cita desde su navegador (sábado 28-nov, 9:30 a. m.) y quedó bien guardada.
-Falta: permiso del dueño para publicar. Siguen pendientes de la Fase 3: precios y stock (el equipo ya creó 4 pedidos
-vacíos porque ningún producto tiene precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5.
+**Fase 4: Agenda y comunicación — PUBLICADA (27-nov-2026), con permiso del dueño.**
+El dueño ya creó su primera cita (sábado 28-nov, 9:30 a. m.) y quedó bien guardada. En la página publicada se revisó
+que carga y que las páginas nuevas piden sesión; el panel del navegador de Claude no tenía sesión para ver más.
+Siguen pendientes de la Fase 3: precios y stock (el equipo ya creó 4 pedidos vacíos porque ningún producto tiene
+precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5 (seguridad, ajustes y lanzamiento).
 
 ## Hecho en la Fase 4
 - [x] Decisiones del dueño (27-nov): el correo sale **desde el correo de cada vendedor** (el botón abre Gmail/Outlook con
@@ -161,7 +162,7 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 - [x] Carpeta `fotos-catalogo/` con 5 fotos de plumillas (no se sube a GitHub).
 
 ## Pendiente de tu parte
-- Dar permiso para publicar la Fase 4.
+- Probar la Fase 4 en la página publicada (agenda, Google Calendar, WhatsApp, enviar un pedido).
 - **Poner precios** (y stock) a los productos que tu equipo vende: sin precio no pueden armar pedidos
   (ya hay 4 pedidos vacíos de David Andrade y Felipe Velasquez).
 - Pedir a IMCOVALLE la autorización escrita (un correo sirve) para copiar su catálogo. Si te dan un Excel, mejor.
