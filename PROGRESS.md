@@ -9,10 +9,9 @@ que carga y que las páginas nuevas piden sesión; el panel del navegador de Cla
 Siguen pendientes de la Fase 3: precios y stock (el equipo creó pedidos vacíos porque ningún producto tiene
 precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5 (seguridad, ajustes y lanzamiento).
 
-**Tareas y Despachos (pedido del dueño, 27-nov-2026) — LISTOS y probados en el computador; falta el permiso para
-publicarlos.**
+**Tareas y Despachos (pedido del dueño, 27-nov-2026) — PUBLICADOS (28-nov-2026), con permiso del dueño.**
 
-## Tareas y Despachos (27/28-nov-2026, pedido por el dueño) — listos, falta publicar
+## Tareas y Despachos (27/28-nov-2026, pedido por el dueño) — PUBLICADOS y revisados en la página
 - [x] Decisiones del dueño: **Tareas del equipo** (qué hacer, fecha límite, responsable, cliente opcional y prioridad;
   se marca hecha; "Mis tareas" o "Todo el equipo"; las vencidas en rojo y las de hoy en el Inicio) y **Pedidos por
   despachar** (Por despachar → Despachado → Entregado; al entregar, el pedido queda completado y se descuenta el stock).
@@ -36,6 +35,9 @@ publicarlos.**
 - [x] Probado en el panel del navegador (computador y celular): crear, editar, marcar y borrar tareas; despachar,
   deshacer, despachar con entrega propia, aviso de stock insuficiente y entrega. Datos de prueba borrados (el
   siguiente pedido sigue siendo el #5). Tipos, lint y compilación sin errores.
+- [x] Publicado en Vercel (28-nov-2026), con permiso del dueño. Revisado en la página publicada: el menú trae Tareas y
+  Despachos; Tareas, Despachos, Inicio y un pedido cargan con sesión y sin errores en la consola; sin sesión, las
+  páginas nuevas mandan a `/login`.
 
 ## Agenda como ruta de visitas (27-nov-2026, como la referencia del dueño) — PUBLICADA y revisada en la página
 - [x] Decisiones del dueño: la barra de cada visita muestra **si ya le toca comprar** (días sin comprar ÷ cada cuántos
