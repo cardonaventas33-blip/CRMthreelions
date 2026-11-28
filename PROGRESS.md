@@ -9,7 +9,7 @@ que carga y que las páginas nuevas piden sesión; el panel del navegador de Cla
 Siguen pendientes de la Fase 3: precios y stock (el equipo ya creó 4 pedidos vacíos porque ningún producto tiene
 precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5 (seguridad, ajustes y lanzamiento).
 
-## Agenda como ruta de visitas (27-nov-2026, como la referencia del dueño) — HECHA en el computador, falta publicarla
+## Agenda como ruta de visitas (27-nov-2026, como la referencia del dueño) — PUBLICADA y revisada en la página
 - [x] Decisiones del dueño: la barra de cada visita muestra **si ya le toca comprar** (días sin comprar ÷ cada cuántos
   días compra; 100 % verde = ya le toca, poco % rojo = compró hace poco); **Iniciar visita** = anotar cómo fue (queda en
   el historial como interacción "Visita"), marcarla hecha y ofrecer crear el pedido; tipos con colores
@@ -184,7 +184,6 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 - [x] Carpeta `fotos-catalogo/` con 5 fotos de plumillas (no se sube a GitHub).
 
 ## Pendiente de tu parte
-- Dar permiso para publicar la agenda nueva (ruta de visitas).
 - Ponerle la **zona** a las sedes de tus clientes (Norte, Sur…) y marcar con ⭐ los clientes importantes.
 - **Poner precios** (y stock) a los productos que tu equipo vende: sin precio no pueden armar pedidos
   (ya hay 4 pedidos vacíos de David Andrade y Felipe Velasquez).
