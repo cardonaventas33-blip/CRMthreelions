@@ -13,6 +13,7 @@ import {
 import { SubirArchivo } from "@/components/clientes/subir-archivo";
 import { borrarSede, guardarSede, quitarArchivo } from "@/lib/acciones/clientes";
 import type { EstadoAccion } from "@/lib/acciones/tipos";
+import { ZONAS } from "@/lib/agenda/opciones";
 import type { Sede } from "@/lib/clientes/datos";
 import {
   DIAS_SEMANA,
@@ -23,6 +24,7 @@ import {
 } from "@/lib/clientes/opciones";
 
 const opcionesTrafico = TRAFICO.map((t) => ({ valor: t, nombre: t }));
+const opcionesZona = Object.entries(ZONAS).map(([valor, nombre]) => ({ valor, nombre }));
 const opcionesHora = HORAS.map((h) => ({ valor: h, nombre: horaBonita(h) }));
 
 // Casilla con forma de botoncito (días, productos)
@@ -60,6 +62,7 @@ function FormularioSede({
       <div className="md:col-span-2">
         <Campo id={`${prefijo}-direccion`} etiqueta="Dirección *" name="address" defaultValue={sede?.address ?? ""} maxLength={300} required />
       </div>
+      <CampoLista id={`${prefijo}-zona`} etiqueta="Zona de la ciudad" name="zone" opciones={opcionesZona} vacio="Elige…" defaultValue={sede?.zone ?? ""} />
       <CampoLista id={`${prefijo}-trafico`} etiqueta="Tráfico" name="traffic" opciones={opcionesTrafico} vacio="Elige…" defaultValue={sede?.traffic ?? ""} />
       <div className="grid grid-cols-2 gap-3">
         <CampoLista id={`${prefijo}-abre`} etiqueta="Abre" name="opens_at" opciones={opcionesHora} vacio="—" defaultValue={sede?.opens_at?.slice(0, 5) ?? ""} />

@@ -81,6 +81,7 @@ export type Sede = {
   name: string;
   address: string;
   city: string;
+  zone: string | null;
   traffic: string | null;
   opens_at: string | null;
   closes_at: string | null;
@@ -120,6 +121,7 @@ export type ClienteDetalle = {
   payment_term_days: number;
   notes: string | null;
   status: EstadoCliente;
+  is_key: boolean;
   photo_url: string | null;
   rut_doc_url: string | null;
   camara_comercio_url: string | null;
@@ -136,7 +138,7 @@ export async function obtenerCliente(id: string): Promise<ClienteDetalle | null>
   const { data } = await supabase
     .from("clients")
     .select(
-      "id, name, nit_rut, trade_name, email, phone, address, city, business_type, employees, payment_term_days, notes, status, photo_url, rut_doc_url, camara_comercio_url, tratamiento_datos_url, created_at, creador:profiles!clients_created_by_fkey(name, email), sedes:client_sites(id, name, address, city, traffic, opens_at, closes_at, employees, square_meters, notes, service_days, products, photo_url, created_at), contactos:client_contacts(id, site_id, first_name, last_name, phone, email, role_title, receives_sales, receives_collections, created_at)",
+      "id, name, nit_rut, trade_name, email, phone, address, city, business_type, employees, payment_term_days, notes, status, is_key, photo_url, rut_doc_url, camara_comercio_url, tratamiento_datos_url, created_at, creador:profiles!clients_created_by_fkey(name, email), sedes:client_sites(id, name, address, city, zone, traffic, opens_at, closes_at, employees, square_meters, notes, service_days, products, photo_url, created_at), contactos:client_contacts(id, site_id, first_name, last_name, phone, email, role_title, receives_sales, receives_collections, created_at)",
     )
     .eq("id", id)
     .maybeSingle();

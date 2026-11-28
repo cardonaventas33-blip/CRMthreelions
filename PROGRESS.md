@@ -9,6 +9,28 @@ que carga y que las páginas nuevas piden sesión; el panel del navegador de Cla
 Siguen pendientes de la Fase 3: precios y stock (el equipo ya creó 4 pedidos vacíos porque ningún producto tiene
 precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5 (seguridad, ajustes y lanzamiento).
 
+## Agenda como ruta de visitas (27-nov-2026, como la referencia del dueño) — HECHA en el computador, falta publicarla
+- [x] Decisiones del dueño: la barra de cada visita muestra **si ya le toca comprar** (días sin comprar ÷ cada cuántos
+  días compra; 100 % verde = ya le toca, poco % rojo = compró hace poco); **Iniciar visita** = anotar cómo fue (queda en
+  el historial como interacción "Visita"), marcarla hecha y ofrecer crear el pedido; tipos con colores
+  (Tu calendario, Planificación inicial, Interacción no planeada, Seguimiento, Compromiso de pago);
+  ⭐ = cliente importante (lo marca el admin) y 🟢 = visita hecha.
+- [x] Migración `20261127090000_agenda_ruta_visitas.sql` (aplicada): en citas `kind` (tipo), `site_id` (sede, debe ser
+  del mismo cliente) y `completed_at` (visita hecha); `zone` en sedes (Norte, Sur, Oriente, Occidente, Centro);
+  `is_key` en clientes (solo el admin lo cambia); interacción tipo "visita"; vista `client_purchase_stats` (compras,
+  última compra, promedio y frecuencia con pedidos enviados o completados). 9 de 9 pruebas OK.
+- [x] `/agenda`: "Agenda del mes" con semanas numeradas (semana del año), lunes a sábado, tarjetas por visita (cliente,
+  sede, CIUDAD - ZONA, potencial = compra promedio, ⭐, 🟢, barra), "Total día", buscador de clientes, colores por tipo,
+  Anterior / Hoy / Siguiente, vista Semana, "Mis citas" o "Todo el equipo". En el celular los días van uno debajo del otro.
+- [x] Ventana **Detalles de la visita**: foto, contacto con llamar y WhatsApp, historial (última compra, compra en
+  promedio, frecuencia y días sin comprar), "se llevó" (productos del último pedido), dirección con "Cómo llegar"
+  (Google Maps), datos de la visita, Google Calendar, **Reprogramar** e **Iniciar visita**.
+- [x] **No programados**: clientes activos sin visita en el mes, primero los que ya les toca comprar, con "Agendar".
+- [x] `/agenda/[id]/visita`: registrar la visita y crear el pedido de ese cliente.
+- [x] Formulario de cita con tipo y sede; formulario de sede con zona; ⭐ en la ficha del cliente (botón para el admin).
+- [x] Probado en el panel del navegador (computador y celular): agenda, detalle, crear cita de prueba, iniciar visita,
+  punto verde, borrar cita. Datos de prueba borrados. `node scripts/probar-agenda.mjs`: 31 de 31 OK.
+
 ## Hecho en la Fase 4
 - [x] Decisiones del dueño (27-nov): el correo sale **desde el correo de cada vendedor** (el botón abre Gmail/Outlook con
   el pedido escrito) y Google Calendar con un **botón** que abre la cita ya llena. Gratis y sin cuentas nuevas.
@@ -162,7 +184,8 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 - [x] Carpeta `fotos-catalogo/` con 5 fotos de plumillas (no se sube a GitHub).
 
 ## Pendiente de tu parte
-- Probar la Fase 4 en la página publicada (agenda, Google Calendar, WhatsApp, enviar un pedido).
+- Dar permiso para publicar la agenda nueva (ruta de visitas).
+- Ponerle la **zona** a las sedes de tus clientes (Norte, Sur…) y marcar con ⭐ los clientes importantes.
 - **Poner precios** (y stock) a los productos que tu equipo vende: sin precio no pueden armar pedidos
   (ya hay 4 pedidos vacíos de David Andrade y Felipe Velasquez).
 - Pedir a IMCOVALLE la autorización escrita (un correo sirve) para copiar su catálogo. Si te dan un Excel, mejor.

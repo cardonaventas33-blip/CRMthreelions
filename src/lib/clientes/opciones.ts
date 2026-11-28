@@ -116,6 +116,7 @@ export const DOCUMENTOS = [
 export type TipoDocumento = (typeof DOCUMENTOS)[number]["tipo"] | "foto";
 
 export const TIPOS_INTERACCION = {
+  visita: "Visita",
   llamada: "Llamada",
   reunion: "Reunión",
   email: "Correo",

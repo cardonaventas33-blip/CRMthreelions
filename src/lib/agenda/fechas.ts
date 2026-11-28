@@ -56,6 +56,14 @@ export function semanasDelMes(fecha: string): string[][] {
   return semanas;
 }
 
+// Número de la semana en el año (semana ISO, la que usan los calendarios): 9-nov-2026 → 46
+export function semanaDelAnio(fecha: string) {
+  const d = new Date(`${fecha}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const inicioAnio = Date.UTC(d.getUTCFullYear(), 0, 1);
+  return Math.ceil(((d.getTime() - inicioAnio) / 86_400_000 + 1) / 7);
+}
+
 // Fecha y hora de Colombia → instante para guardar en la base
 export function instanteColombia(fecha: string, hora: string) {
   return new Date(`${fecha}T${hora}:00-05:00`);

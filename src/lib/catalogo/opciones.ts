@@ -36,14 +36,15 @@ export function urlFotoProducto(ruta: string | null | undefined) {
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/productos/${ruta}`;
 }
 
+// Texto sin tildes y en minúsculas, para comparar búsquedas: "Batería" → "bateria"
+export function normalizarTexto(texto: string) {
+  return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
 // Palabras para buscar: sin tildes, en minúsculas y sin signos que confunden la búsqueda.
 // Cada palabra debe aparecer en el producto: "bateria akt" encuentra "Batería ... AKT ...".
 export function palabrasDeBusqueda(texto: string) {
-  return texto
-    .slice(0, 200)
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
+  return normalizarTexto(texto.slice(0, 200))
     .replace(/[,()*%\\_"']/g, " ")
     .split(/\s+/)
     .filter(Boolean)

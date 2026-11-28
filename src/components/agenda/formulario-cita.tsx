@@ -1,23 +1,30 @@
 "use client";
 
+import { useState } from "react";
 import { BotonEnviar, Campo, CampoArea, CampoLista, Mensaje, useFormularioAccion } from "@/components/formulario";
 import { guardarCita } from "@/lib/acciones/citas";
 import type { EstadoAccion } from "@/lib/acciones/tipos";
 import { DURACIONES, TITULOS_SUGERIDOS } from "@/lib/agenda/fechas";
+import { TIPOS_CITA, type TipoCita } from "@/lib/agenda/opciones";
 import { HORAS, horaBonita } from "@/lib/clientes/opciones";
 
 type Opcion = { id: string; nombre: string };
+type ClienteOpcion = Opcion & { sedes: Opcion[] };
 
 export type CitaEditable = {
   id: string;
   title: string;
+  kind: TipoCita;
   fecha: string;
   hora: string;
   duracion: number;
   client_id: string | null;
+  site_id: string | null;
   user_id: string;
   notes: string | null;
 };
+
+const opcionesTipo = Object.entries(TIPOS_CITA).map(([valor, t]) => ({ valor, nombre: t.nombre }));
 
 export function FormularioCita({
   cita,
@@ -29,13 +36,15 @@ export function FormularioCita({
 }: {
   cita?: CitaEditable;
   diaInicial: string;
-  clientes: Opcion[];
+  clientes: ClienteOpcion[];
   /** Solo para el administrador: puede elegir quién va a la cita */
   equipo: Opcion[] | null;
   clienteInicial?: string;
   yoId: string;
 }) {
   const { estado, enviando, ref, alEnviar } = useFormularioAccion<EstadoAccion>(guardarCita, {});
+  const [clienteId, setClienteId] = useState(cita?.client_id ?? clienteInicial);
+  const sedes = clientes.find((c) => c.id === clienteId)?.sedes ?? [];
 
   // Si la cita guardada tiene una hora o duración fuera de la lista, se agrega para no perderla
   const horas = HORAS.map((h) => ({ valor: h, nombre: horaBonita(h) }));
@@ -48,7 +57,8 @@ export function FormularioCita({
   return (
     <form ref={ref} onSubmit={alEnviar} noValidate className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {cita && <input type="hidden" name="id" value={cita.id} />}
-      <div className="md:col-span-2">
+      <CampoLista id="cita-tipo" etiqueta="Tipo de visita *" name="kind" opciones={opcionesTipo} defaultValue={cita?.kind ?? "planificacion"} />
+      <div>
         <Campo
           id="cita-titulo"
           etiqueta="¿De qué es la cita? *"
@@ -58,7 +68,6 @@ export function FormularioCita({
           list="titulos-cita"
           autoComplete="off"
           required
-          ayuda="Puedes escribir lo que quieras o elegir: Visita, Llamada, Reunión, Entrega de pedido…"
         />
         <datalist id="titulos-cita">
           {TITULOS_SUGERIDOS.map((t) => (
@@ -66,19 +75,31 @@ export function FormularioCita({
           ))}
         </datalist>
       </div>
-      <div className="md:col-span-2">
-        <CampoLista
-          id="cita-cliente"
-          etiqueta="Cliente"
-          name="client_id"
-          opciones={clientes.map((c) => ({ valor: c.id, nombre: c.nombre }))}
-          vacio="Sin cliente (cita interna)"
-          defaultValue={cita?.client_id ?? clienteInicial}
-        />
-      </div>
+      <CampoLista
+        id="cita-cliente"
+        etiqueta="Cliente"
+        name="client_id"
+        opciones={clientes.map((c) => ({ valor: c.id, nombre: c.nombre }))}
+        vacio="Sin cliente (cita interna)"
+        value={clienteId}
+        onChange={(e) => setClienteId(e.target.value)}
+      />
+      {/* La lista de sedes cambia según el cliente elegido */}
+      <CampoLista
+        key={clienteId}
+        id="cita-sede"
+        etiqueta="Sede"
+        name="site_id"
+        opciones={sedes.map((s) => ({ valor: s.id, nombre: s.nombre }))}
+        vacio={!clienteId ? "Primero elige el cliente" : sedes.length ? "Sin sede en particular" : "Este cliente no tiene sedes"}
+        defaultValue={cita && cita.client_id === clienteId ? (cita.site_id ?? "") : (sedes.length === 1 ? sedes[0].id : "")}
+        disabled={!clienteId || sedes.length === 0}
+      />
       <Campo id="cita-fecha" etiqueta="Fecha *" name="fecha" type="date" defaultValue={cita?.fecha ?? diaInicial} required ayuda="De lunes a sábado." />
-      <CampoLista id="cita-hora" etiqueta="Hora *" name="hora" opciones={horas} defaultValue={cita?.hora ?? "09:00"} />
-      <CampoLista id="cita-duracion" etiqueta="Duración *" name="duracion" opciones={duraciones} defaultValue={String(cita?.duracion ?? 60)} />
+      <div className="grid grid-cols-2 gap-3">
+        <CampoLista id="cita-hora" etiqueta="Hora *" name="hora" opciones={horas} defaultValue={cita?.hora ?? "09:00"} />
+        <CampoLista id="cita-duracion" etiqueta="Duración *" name="duracion" opciones={duraciones} defaultValue={String(cita?.duracion ?? 60)} />
+      </div>
       {equipo && (
         <CampoLista
           id="cita-responsable"

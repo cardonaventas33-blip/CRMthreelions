@@ -11,14 +11,17 @@ import {
   MapPin,
   MessageCircle,
   Phone,
+  Star,
   Users,
 } from "lucide-react";
 import { TarjetaCita } from "@/components/agenda/tarjeta-cita";
+import { BotonImportante } from "@/components/clientes/boton-importante";
 import { InsigniaPedido } from "@/components/catalogo/insignias";
 import { InsigniaEstado, InsigniasDocumentos } from "@/components/clientes/insignias";
 import { FormularioInteraccion } from "@/components/clientes/interacciones";
 import { BotonCrearPedido } from "@/components/pedidos/crear-pedido";
 import { listarCitas } from "@/lib/agenda/datos";
+import { ZONAS, type Zona } from "@/lib/agenda/opciones";
 import { listarPedidos } from "@/lib/catalogo/datos";
 import { enlacesFirmados, listarInteracciones, obtenerCliente } from "@/lib/clientes/datos";
 import {
@@ -123,7 +126,10 @@ export default async function FichaCliente({ params, searchParams }: Props) {
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-bold tracking-tight break-words sm:text-3xl">{cliente.name}</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight break-words sm:text-3xl">
+            {cliente.name}
+            {cliente.is_key && <Star className="size-6 shrink-0 fill-amber-400 text-amber-500" aria-label="Cliente importante" />}
+          </h1>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-soft">
             {cliente.trade_name && <span className="font-medium text-ink">{cliente.trade_name}</span>}
             {cliente.nit_rut && <span className="tabular-nums">NIT/CC {cliente.nit_rut}</span>}
@@ -138,6 +144,7 @@ export default async function FichaCliente({ params, searchParams }: Props) {
         >
           Actualizar información
         </Link>
+        {yo?.rol === "admin" && <BotonImportante clienteId={cliente.id} importante={cliente.is_key} />}
       </div>
 
       {/* Pestañas */}
@@ -193,6 +200,7 @@ export default async function FichaCliente({ params, searchParams }: Props) {
                         <p className="mt-1 flex items-start gap-1.5 text-sm text-ink-soft">
                           <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden />
                           {s.address}, {s.city}
+                          {s.zone && s.zone in ZONAS ? ` · ${ZONAS[s.zone as Zona]}` : ""}
                         </p>
                       </div>
                       <dl className="grid grid-cols-2 gap-3 text-sm">

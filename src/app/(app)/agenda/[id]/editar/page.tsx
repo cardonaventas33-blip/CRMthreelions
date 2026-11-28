@@ -26,7 +26,11 @@ export default async function EditarCita({ params }: Props) {
     : [[], null];
   // Si el cliente de la cita está inactivo no sale en la lista: se agrega para no perderlo
   if (cita.cliente && !clientes.some((c) => c.id === cita.cliente!.id)) {
-    clientes.unshift({ id: cita.cliente.id, nombre: cita.cliente.trade_name || cita.cliente.name });
+    clientes.unshift({
+      id: cita.cliente.id,
+      nombre: cita.cliente.trade_name || cita.cliente.name,
+      sedes: cita.sede ? [{ id: cita.sede.id, nombre: `${cita.sede.name} · ${cita.sede.city}` }] : [],
+    });
   }
 
   return (
@@ -57,10 +61,12 @@ export default async function EditarCita({ params }: Props) {
               cita={{
                 id: cita.id,
                 title: cita.title,
+                kind: cita.kind,
                 fecha,
                 hora,
                 duracion: Math.round((new Date(cita.end_at).getTime() - new Date(cita.start_at).getTime()) / 60_000),
                 client_id: cita.client_id,
+                site_id: cita.site_id,
                 user_id: cita.user_id,
                 notes: cita.notes,
               }}

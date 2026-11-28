@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { CalendarPlus, MapPin, MessageCircle, Pencil, UserRound } from "lucide-react";
+import { CalendarCheck, CalendarPlus, MapPin, MessageCircle, Pencil, Play, UserRound } from "lucide-react";
 import type { Cita } from "@/lib/agenda/datos";
 import { conMayuscula, enlaceGoogleCalendar, partesColombia, textoFecha, textoHora } from "@/lib/agenda/fechas";
+import { TIPOS_CITA } from "@/lib/agenda/opciones";
 import { enlaceWhatsApp, tieneWhatsApp } from "@/lib/contacto";
 
 // Celular para avisarle al cliente: primero un contacto comercial, luego cualquier contacto, luego el de la empresa
@@ -47,12 +48,16 @@ export function TarjetaCita({
   });
 
   return (
-    <article className={`flex flex-col gap-1.5 rounded-xl border border-line p-3 ${cita.cancelled ? "bg-mist/60" : ""}`}>
+    <article
+      className={`flex flex-col gap-1.5 rounded-xl border border-l-4 border-line ${TIPOS_CITA[cita.kind].borde} p-3 ${cita.cancelled ? "bg-mist/60" : ""}`}
+    >
       <div className="flex flex-wrap items-center gap-2">
         <p className="text-sm font-semibold text-ink-soft tabular-nums">
           {conFecha && `${conMayuscula(textoFecha(fecha, { weekday: "short", day: "numeric", month: "short" }))} · `}
           {horario}
         </p>
+        <span className="text-xs text-ink-soft">{TIPOS_CITA[cita.kind].nombre}</span>
+        {cita.completed_at && <span className="rounded-full bg-ok-soft px-2 py-0.5 text-xs font-semibold text-ok">Hecha</span>}
         {cita.cancelled && (
           <span className="rounded-full bg-mist px-2 py-0.5 text-xs font-semibold text-ink-soft">Cancelada</span>
         )}
@@ -76,7 +81,19 @@ export function TarjetaCita({
       {cita.notes && <p className="line-clamp-3 text-sm break-words whitespace-pre-line">{cita.notes}</p>}
 
       <div className="mt-1 flex flex-wrap gap-2">
-        {puedeEditar && (
+        {puedeEditar && !cita.completed_at && !cita.cancelled && (
+          <Link href={`/agenda/${cita.id}/visita`} className={`${botonChico} border-brand/40 text-brand`}>
+            <Play className="size-4" aria-hidden />
+            Iniciar visita
+          </Link>
+        )}
+        {cita.completed_at && (
+          <Link href={`/agenda/${cita.id}/visita`} className={botonChico}>
+            <CalendarCheck className="size-4 text-ok" aria-hidden />
+            Ver visita
+          </Link>
+        )}
+        {puedeEditar && !cita.completed_at && (
           <Link href={`/agenda/${cita.id}/editar`} className={botonChico}>
             <Pencil className="size-4" aria-hidden />
             Editar

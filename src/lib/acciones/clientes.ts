@@ -15,6 +15,7 @@ import {
   TRAFICO,
 } from "@/lib/clientes/opciones";
 import type { EstadoAccion } from "@/lib/acciones/tipos";
+import { ZONAS } from "@/lib/agenda/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 import { crearClienteServidor } from "@/lib/supabase/server";
 
@@ -147,6 +148,21 @@ export async function actualizarCliente(
   return { ok: "Datos de la empresa guardados." };
 }
 
+// Cliente importante (estrella en la agenda): solo el administrador (la base también lo revisa)
+export async function marcarImportante(id: string, importante: boolean): Promise<EstadoAccion> {
+  const yo = await obtenerUsuarioActual();
+  if (yo?.rol !== "admin") return { error: "Solo un administrador marca clientes importantes." };
+  if (!uuid.safeParse(id).success || typeof importante !== "boolean") return { error: "Datos no válidos." };
+
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase.from("clients").update({ is_key: importante }).eq("id", id).select("id");
+  if (error || !data?.length) return { error: "No se pudo cambiar. Intenta de nuevo." };
+
+  revalidatePath("/clientes", "layout");
+  revalidatePath("/agenda", "layout");
+  return { ok: importante ? "Marcado como cliente importante." : "Ya no está marcado como importante." };
+}
+
 export async function cambiarEstadoCliente(id: string, estado: string): Promise<EstadoAccion> {
   if (!(await puedeTrabajar())) return { error: SIN_PERMISO };
   const r = z
@@ -178,6 +194,7 @@ const esquemaSede = z.object({
   address: textoRequerido(300, "Escribe la dirección de la sede."),
   city: textoRequerido(80, "Escribe la ciudad de la sede."),
   traffic: deLista(TRAFICO, "Elige el tráfico de la lista."),
+  zone: deLista(Object.keys(ZONAS), "Elige la zona de la lista."),
   opens_at: deLista(HORAS, "Elige la hora de apertura de la lista."),
   closes_at: deLista(HORAS, "Elige la hora de cierre de la lista."),
   employees: enteroOpcional(100000, "Empleados de la sede: escribe solo números."),
@@ -198,6 +215,7 @@ export async function guardarSede(_antes: EstadoAccion, datos: FormData): Promis
     address: leer(datos, "address"),
     city: leer(datos, "city"),
     traffic: leer(datos, "traffic"),
+    zone: leer(datos, "zone"),
     opens_at: leer(datos, "opens_at"),
     closes_at: leer(datos, "closes_at"),
     employees: leer(datos, "employees"),

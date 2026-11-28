@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 
 const f = await import(new URL("../src/lib/agenda/fechas.ts", import.meta.url).href);
 const k = await import(new URL("../src/lib/contacto.ts", import.meta.url).href);
+const c = await import(new URL("../src/lib/agenda/compras.ts", import.meta.url).href);
+const o = await import(new URL("../src/lib/agenda/opciones.ts", import.meta.url).href);
 
 let ok = 0;
 const prueba = (nombre, fn) => {
@@ -66,6 +68,47 @@ prueba("enlace de correo con asunto y saltos de línea", () => {
   const url = k.enlaceCorreo("ventas@cliente.com", "Pedido #5 · Three Lions SAS", "Hola,\n\nTotal: $ 10.000");
   assert.ok(url.startsWith("mailto:ventas@cliente.com?subject=Pedido%20%235"));
   assert.ok(url.includes("%0D%0A%0D%0ATotal"));
+});
+
+// ---------- Ruta de visitas ----------
+const DIA = 86_400_000;
+const ahora = Date.UTC(2026, 10, 27, 17, 0);
+const resumen = (dias, frecuencia) => ({
+  compras: 3,
+  ultima_compra: new Date(ahora - dias * DIA).toISOString(),
+  ultimo_total: 1,
+  ultimo_pedido: "x",
+  promedio: 1,
+  frecuencia_dias: frecuencia,
+});
+prueba("semana del año: 9-nov-2026 es la 46 (como la referencia)", () => assert.equal(f.semanaDelAnio("2026-11-09"), 46));
+prueba("semana del año: 2-nov-2026 es la 45", () => assert.equal(f.semanaDelAnio("2026-11-02"), 45));
+prueba("semana del año: 1-ene-2027 todavía es la 53 de 2026", () => assert.equal(f.semanaDelAnio("2027-01-01"), 53));
+prueba("cliente sin compras", () => assert.deepEqual(c.estadoCompra(null, ahora), { tipo: "sin-compras" }));
+prueba("una sola compra: todavía no hay frecuencia", () =>
+  assert.deepEqual(c.estadoCompra(resumen(10, null), ahora), { tipo: "una-compra", dias: 10 }));
+prueba("ya le toca: 232 días sin comprar y compra cada 146 → 100% verde", () => {
+  const r = c.estadoCompra(resumen(232, 146), ahora);
+  assert.equal(r.porcentaje, 100);
+  assert.equal(r.nivel, "alto");
+  assert.equal(r.toca, true);
+});
+prueba("compró hace poco: 10 de 30 días → 33% rojo", () => {
+  const r = c.estadoCompra(resumen(10, 30), ahora);
+  assert.equal(r.porcentaje, 33);
+  assert.equal(r.nivel, "bajo");
+  assert.equal(r.toca, false);
+});
+prueba("ya casi: 22 de 25 días → 88% naranja", () => {
+  const r = c.estadoCompra(resumen(22, 25), ahora);
+  assert.equal(r.porcentaje, 88);
+  assert.equal(r.nivel, "medio");
+});
+prueba("ciudad y zona como en la referencia: CALI - NORTE", () => assert.equal(o.textoLugar("Cali", "norte"), "CALI - NORTE"));
+prueba("sin zona, solo la ciudad", () => assert.equal(o.textoLugar("Cali", null), "CALI"));
+prueba("tipos de visita", () => {
+  assert.equal(o.esTipoCita("cobro"), true);
+  assert.equal(o.esTipoCita("inventado"), false);
 });
 
 console.log(`\n${ok} pruebas OK`);
