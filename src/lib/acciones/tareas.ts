@@ -13,9 +13,9 @@ const SIN_PERMISO = "No puedes cambiar esta tarea: es de otra persona del equipo
 const uuid = z.uuid();
 const opcional = z.union([z.uuid(), z.literal("")]).transform((v) => (v === "" ? null : v));
 
+// Todo el CRM, porque el numerito de "Tareas" está en el menú de todas las pantallas
 function refrescar() {
-  revalidatePath("/tareas", "layout");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }
 
 function mensajeError(error: { code?: string }, porDefecto: string) {

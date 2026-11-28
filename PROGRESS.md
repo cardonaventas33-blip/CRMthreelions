@@ -10,6 +10,7 @@ Siguen pendientes de la Fase 3: precios y stock (el equipo creó pedidos vacíos
 precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5 (seguridad, ajustes y lanzamiento).
 
 **Tareas y Despachos (pedido del dueño, 27-nov-2026) — PUBLICADOS (28-nov-2026), con permiso del dueño.**
+**Numerito de tareas en el menú (28-nov-2026) — listo y probado en el computador; falta el permiso para publicarlo.**
 
 ## Tareas y Despachos (27/28-nov-2026, pedido por el dueño) — PUBLICADOS y revisados en la página
 - [x] Decisiones del dueño: **Tareas del equipo** (qué hacer, fecha límite, responsable, cliente opcional y prioridad;
@@ -38,6 +39,14 @@ precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5 (segur
 - [x] Publicado en Vercel (28-nov-2026), con permiso del dueño. Revisado en la página publicada: el menú trae Tareas y
   Despachos; Tareas, Despachos, Inicio y un pedido cargan con sesión y sin errores en la consola; sin sesión, las
   páginas nuevas mandan a `/login`.
+- [x] (28-nov) El dueño preguntó cómo hacer las tareas más visibles para el equipo. Se le explicó que su tarea
+  "Mañana reunión capacitación incov" quedó a su nombre (los vendedores solo la ven en "Todo el equipo"). De las
+  opciones (tarea para todo el equipo, Inicio con los próximos días, numerito en el menú, compartir por WhatsApp)
+  eligió **solo el numerito**.
+- [x] **Numerito rojo junto a "Tareas"** en el menú: cuántas tareas de cada persona son para hoy o están vencidas.
+  En el celular también sale sobre el botón del menú, y si el grupo "Comercial" está cerrado, sale en su título.
+  Se actualiza al abrir o recargar el CRM y al crear, marcar o borrar una tarea. Probado en computador y celular con
+  una tarea de prueba (ya borrada). Tipos, lint y compilación sin errores. **Falta publicarlo.**
 
 ## Agenda como ruta de visitas (27-nov-2026, como la referencia del dueño) — PUBLICADA y revisada en la página
 - [x] Decisiones del dueño: la barra de cada visita muestra **si ya le toca comprar** (días sin comprar ÷ cada cuántos

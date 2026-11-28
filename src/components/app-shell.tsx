@@ -3,19 +3,24 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "lucide-react";
-import { MenuLateral } from "@/components/menu-lateral";
+import { Contador, MenuLateral } from "@/components/menu-lateral";
+import type { AvisosMenu } from "@/lib/navegacion";
 import type { UsuarioVisible } from "@/lib/roles";
 
 // Marco de la app: menú fijo a la izquierda en el computador,
 // y en el celular una barra arriba con un botón que abre el menú.
 export function AppShell({
   usuario,
+  avisos = {},
   children,
 }: {
   usuario: UsuarioVisible;
+  /** Numeritos rojos del menú (por ejemplo, tareas para hoy) */
+  avisos?: AvisosMenu;
   children: React.ReactNode;
 }) {
   const [abierto, setAbierto] = useState(false);
+  const totalAvisos = Object.values(avisos).reduce<number>((suma, n) => suma + (n ?? 0), 0);
   const botonMenu = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
 
@@ -45,7 +50,7 @@ export function AppShell({
     <div className="min-h-dvh">
       {/* Computador: menú fijo a la izquierda */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-line bg-paper lg:block">
-        <MenuLateral usuario={usuario} />
+        <MenuLateral usuario={usuario} avisos={avisos} />
       </aside>
 
       {/* Celular: barra de arriba con el botón del menú */}
@@ -54,12 +59,17 @@ export function AppShell({
           ref={botonMenu}
           type="button"
           onClick={() => setAbierto(true)}
-          aria-label="Abrir menú"
+          aria-label={totalAvisos > 0 ? `Abrir menú (${totalAvisos} ${totalAvisos === 1 ? "pendiente" : "pendientes"})` : "Abrir menú"}
           aria-expanded={abierto}
           aria-controls="menu-celular"
-          className="grid size-11 place-items-center rounded-xl text-ink hover:bg-mist"
+          className="relative grid size-11 place-items-center rounded-xl text-ink hover:bg-mist"
         >
           <Menu className="size-6" aria-hidden />
+          {totalAvisos > 0 && (
+            <span className="absolute top-0.5 right-0.5" aria-hidden>
+              <Contador numero={totalAvisos} pequeno />
+            </span>
+          )}
         </button>
         <Image
           src="/brand/logo-three-lions.png"
@@ -95,7 +105,7 @@ export function AppShell({
             abierto ? "translate-x-0 shadow-xl" : "-translate-x-full"
           }`}
         >
-          <MenuLateral usuario={usuario} onCerrar={cerrar} />
+          <MenuLateral usuario={usuario} avisos={avisos} onCerrar={cerrar} />
         </div>
       </div>
 

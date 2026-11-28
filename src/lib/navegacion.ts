@@ -125,3 +125,6 @@ export const todasLasSecciones = grupos.flatMap((grupo) => grupo.secciones);
 export function buscarSeccion(slug: string) {
   return todasLasSecciones.find((seccion) => seccion.slug === slug);
 }
+
+// Numeritos rojos del menú: slug de la sección → cuántas cosas pendientes tiene (por ejemplo { tareas: 2 })
+export type AvisosMenu = Partial<Record<string, number>>;

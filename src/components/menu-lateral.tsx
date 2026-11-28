@@ -7,14 +7,29 @@ import { useState } from "react";
 import { ChevronDown, LogOut, X } from "lucide-react";
 import { SelectorTema } from "@/components/selector-tema";
 import { cerrarSesion } from "@/lib/acciones/sesion";
-import { grupos, inicio } from "@/lib/navegacion";
+import { grupos, inicio, type AvisosMenu } from "@/lib/navegacion";
 import { iniciales, NOMBRE_ROL, type UsuarioVisible } from "@/lib/roles";
 
 type Props = {
   usuario: UsuarioVisible;
+  /** Numeritos rojos por sección (por ejemplo { tareas: 2 }) */
+  avisos?: AvisosMenu;
   /** Cierra el menú en el celular (al tocar un enlace o la X). */
   onCerrar?: () => void;
 };
+
+// Numerito rojo (por ejemplo, tareas para hoy o vencidas)
+export function Contador({ numero, pequeno = false }: { numero: number; pequeno?: boolean }) {
+  return (
+    <span
+      className={`grid place-items-center rounded-full bg-brand font-bold text-on-brand tabular-nums ${
+        pequeno ? "h-5 min-w-5 px-1 text-[11px]" : "h-6 min-w-6 px-1.5 text-xs"
+      }`}
+    >
+      {numero > 99 ? "99+" : numero}
+    </span>
+  );
+}
 
 // Estilo de cada opción del menú: la activa va en rojo suave, como en la referencia
 function claseEnlace(activo: boolean) {
@@ -23,7 +38,7 @@ function claseEnlace(activo: boolean) {
   }`;
 }
 
-export function MenuLateral({ usuario, onCerrar }: Props) {
+export function MenuLateral({ usuario, avisos = {}, onCerrar }: Props) {
   const ruta = usePathname();
   const [cerrados, setCerrados] = useState<Record<string, boolean>>({});
 
@@ -100,6 +115,7 @@ export function MenuLateral({ usuario, onCerrar }: Props) {
         {gruposVisibles.map((grupo, i) => {
           const cerrado = cerrados[grupo.titulo] ?? false;
           const idLista = `grupo-menu-${i}`;
+          const avisosGrupo = grupo.secciones.reduce((suma, s) => suma + (avisos[s.slug] ?? 0), 0);
           return (
             <div key={grupo.titulo} className="mt-5">
               <button
@@ -113,6 +129,8 @@ export function MenuLateral({ usuario, onCerrar }: Props) {
               >
                 <grupo.icono className="size-5 shrink-0" aria-hidden />
                 <span className="flex-1 text-left">{grupo.titulo}</span>
+                {/* Con el grupo cerrado, el numerito queda a la vista en el título */}
+                {cerrado && avisosGrupo > 0 && <Contador numero={avisosGrupo} pequeno />}
                 <ChevronDown
                   className={`size-4 transition-transform duration-200 motion-reduce:transition-none ${
                     cerrado ? "-rotate-90" : ""
@@ -128,6 +146,7 @@ export function MenuLateral({ usuario, onCerrar }: Props) {
                 {grupo.secciones.map((seccion) => {
                   const href = `/${seccion.slug}`;
                   const activa = estaActiva(href);
+                  const aviso = avisos[seccion.slug] ?? 0;
                   return (
                     <li key={seccion.slug}>
                       <Link
@@ -137,7 +156,13 @@ export function MenuLateral({ usuario, onCerrar }: Props) {
                         className={claseEnlace(activa)}
                       >
                         <seccion.icono className="size-5 shrink-0" aria-hidden />
-                        {seccion.nombre}
+                        <span className="flex-1">{seccion.nombre}</span>
+                        {aviso > 0 && (
+                          <span title={`${aviso} ${aviso === 1 ? "tarea" : "tareas"} para hoy o vencidas`}>
+                            <Contador numero={aviso} />
+                            <span className="sr-only">{aviso === 1 ? " pendiente" : " pendientes"}</span>
+                          </span>
+                        )}
                       </Link>
                     </li>
                   );

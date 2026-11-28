@@ -94,3 +94,15 @@ export function aFilaTarea(t: Tarea, yo: { id: string; rol: string } | null, mos
     puedeBorrar: esAdmin || t.created_by === yo?.id,
   };
 }
+
+// El numerito del menú: cuántas tareas de esta persona son para hoy o ya se vencieron
+export async function contarTareasParaHoy(usuarioId: string, hoy: string) {
+  const supabase = await crearClienteServidor();
+  const { count } = await supabase
+    .from("tasks")
+    .select("id", { count: "exact", head: true })
+    .eq("assigned_to", usuarioId)
+    .is("done_at", null)
+    .lte("due_date", hoy);
+  return count ?? 0;
+}
