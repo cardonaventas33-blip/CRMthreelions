@@ -166,6 +166,8 @@ export async function cambiarEstadoPedido(pedidoId: string, estado: string): Pro
   if (!(await puedeTrabajar())) return { error: SIN_PERMISO };
   const r = z.enum(["borrador", "enviado", "completado"]).safeParse(estado);
   if (!uuid.safeParse(pedidoId).success || !r.success) return { error: "Datos no válidos." };
+  // Un pedido se completa al marcarlo como entregado en Despachos (así queda la transportadora y la guía)
+  if (r.data === "completado") return { error: "Para completar un pedido, márcalo como entregado en Despachos." };
 
   const supabase = await crearClienteServidor();
   const { data, error } = await supabase
@@ -177,14 +179,8 @@ export async function cambiarEstadoPedido(pedidoId: string, estado: string): Pro
   if (!data?.length) return { error: SIN_PERMISO };
 
   refrescar(pedidoId);
-  return {
-    ok:
-      r.data === "enviado"
-        ? "Pedido enviado."
-        : r.data === "completado"
-          ? "Pedido completado. El stock ya se descontó."
-          : "El pedido volvió a borrador.",
-  };
+  revalidatePath("/despachos");
+  return { ok: r.data === "enviado" ? "Pedido enviado. Ya aparece en Despachos, por despachar." : "El pedido volvió a borrador." };
 }
 
 export async function borrarPedido(pedidoId: string): Promise<EstadoAccion> {

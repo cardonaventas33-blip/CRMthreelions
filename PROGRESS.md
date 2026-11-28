@@ -6,8 +6,36 @@
 **Fase 4: Agenda y comunicación — PUBLICADA (27-nov-2026), con permiso del dueño.**
 El dueño ya creó su primera cita (sábado 28-nov, 9:30 a. m.) y quedó bien guardada. En la página publicada se revisó
 que carga y que las páginas nuevas piden sesión; el panel del navegador de Claude no tenía sesión para ver más.
-Siguen pendientes de la Fase 3: precios y stock (el equipo ya creó 4 pedidos vacíos porque ningún producto tiene
+Siguen pendientes de la Fase 3: precios y stock (el equipo creó pedidos vacíos porque ningún producto tiene
 precio) y la autorización de IMCOVALLE. Después: "sigue" para la Fase 5 (seguridad, ajustes y lanzamiento).
+
+**Tareas y Despachos (pedido del dueño, 27-nov-2026) — LISTOS y probados en el computador; falta el permiso para
+publicarlos.**
+
+## Tareas y Despachos (27/28-nov-2026, pedido por el dueño) — listos, falta publicar
+- [x] Decisiones del dueño: **Tareas del equipo** (qué hacer, fecha límite, responsable, cliente opcional y prioridad;
+  se marca hecha; "Mis tareas" o "Todo el equipo"; las vencidas en rojo y las de hoy en el Inicio) y **Pedidos por
+  despachar** (Por despachar → Despachado → Entregado; al entregar, el pedido queda completado y se descuenta el stock).
+- [x] Migración `20261127110000_tareas_despachos.sql` (aplicada): tabla `tasks` con permisos (todo el equipo las ve;
+  cada uno se asigna las suyas y el admin a cualquiera; las cambia el responsable, quien la creó o el admin; las borra
+  quien la creó o el admin). En pedidos: `dispatched_at`, `carrier`, `tracking_number`, `dispatch_notes`,
+  `delivered_at` y `received_by`, con reglas en la base (solo se despachan pedidos enviados; uno despachado no vuelve a
+  borrador sin deshacer el despacho; la entrega solo se guarda con el pedido completado). 12 de 12 pruebas OK.
+- [x] Menú: **Tareas** y **Despachos** debajo de Catálogo.
+- [x] `/tareas`: formulario rápido (qué hacer, fecha, prioridad, cliente y, para el admin, responsable); grupos
+  Vencidas (en rojo), Para hoy, Próximas y Sin fecha; círculo para marcarla hecha (o devolverla); "Hechas hace poco";
+  "Mis tareas" / "Todo el equipo". `/tareas/[id]/editar` con "Borrar tarea".
+- [x] Inicio: "Tareas para hoy" (las de hoy y las vencidas; el admin ve las del equipo); se marcan ahí mismo.
+- [x] `/despachos`: pestañas Por despachar / Despachados / Entregados (los últimos 30). **Despachar**: transportadora
+  (Servientrega, Coordinadora, Interrapidísimo, Envía, TCC, Deprisa, Entrega propia u otra), número de guía, fecha y
+  notas. **Avisar por WhatsApp** con la transportadora y la guía. **Marcar entregado** (quién recibió y fecha) o
+  **Deshacer despacho**. Si no alcanza el stock, dice qué producto falta.
+- [x] Página del pedido: sección **Despacho** con lo mismo. Se quitó "Marcar como completado": ahora un pedido se
+  completa al marcarlo entregado (así queda la transportadora, la guía y quién recibió).
+- [x] Arreglo: en la página del pedido, el nombre de los productos ya no sale letra por letra en pantallas medianas.
+- [x] Probado en el panel del navegador (computador y celular): crear, editar, marcar y borrar tareas; despachar,
+  deshacer, despachar con entrega propia, aviso de stock insuficiente y entrega. Datos de prueba borrados (el
+  siguiente pedido sigue siendo el #5). Tipos, lint y compilación sin errores.
 
 ## Agenda como ruta de visitas (27-nov-2026, como la referencia del dueño) — PUBLICADA y revisada en la página
 - [x] Decisiones del dueño: la barra de cada visita muestra **si ya le toca comprar** (días sin comprar ÷ cada cuántos
@@ -186,7 +214,9 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 ## Pendiente de tu parte
 - Ponerle la **zona** a las sedes de tus clientes (Norte, Sur…) y marcar con ⭐ los clientes importantes.
 - **Poner precios** (y stock) a los productos que tu equipo vende: sin precio no pueden armar pedidos
-  (ya hay 4 pedidos vacíos de David Andrade y Felipe Velasquez).
+  (hay pedidos vacíos en borrador por eso). Sin stock, en Despachos no se puede marcar un pedido como entregado.
+- Decidir qué hacer con el producto de prueba **"PRUEBA Producto despacho (se borra)"** (código 44300S94-003):
+  le pusiste foto, línea y precio, así que no lo borré. ¿Se borra o se vuelve producto real (cambiándole el nombre)?
 - Pedir a IMCOVALLE la autorización escrita (un correo sirve) para copiar su catálogo. Si te dan un Excel, mejor.
 - Poner precios y stock a los productos (empezando por las 59 plumillas).
 - Cuando quieras: crear las cuentas de tu equipo de ventas desde "Usuarios".
@@ -207,6 +237,11 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 - **Copiador:** solo agrega productos nuevos; nunca cambia lo que ya está en el CRM (el dueño organiza a su gusto).
 - **Pedidos:** número consecutivo automático (#1, #2…). Las ventas del tablero cuentan pedidos enviados y completados.
   Un vendedor ve todos los pedidos, pero solo cambia los suyos; el admin cambia todos.
+- **Despachos (28-nov):** un pedido se completa solo al marcarlo entregado en Despachos (o en la sección Despacho del
+  pedido). Lo despacha y lo entrega su vendedor o un admin. Fecha de despacho o entrega: si es hoy, la hora de ese
+  momento; si fue otro día, ese día al mediodía (no se aceptan fechas futuras).
+- **Tareas (28-nov):** cada vendedor se asigna las suyas; el admin puede asignarlas a cualquiera. El admin ve por
+  defecto las del equipo y cada vendedor las suyas (los dos pueden cambiar la vista).
 - Carpeta del proyecto: `Documentos\Proyectos\crm-three-lions`. Repositorio: `CRMthreelions` (cuenta cardonaventas33-blip). Rama: `main`.
 - Pantallas internas en `src/app/(app)/` (con menú); `/login` va fuera, sin menú.
 - Nombres de las claves: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (pública por diseño) y
@@ -268,6 +303,10 @@ Cada medida es un producto distinto (cada pulgada del rango, 59 en total):
 - Búsqueda: la columna `products.search` se calcula sola (nombre + código + línea + medida + marca, sin tildes).
   En el código, `palabrasDeBusqueda()` limpia lo que escribe la persona igual que la base.
 - En Windows, los scripts de Node que se conectan a internet terminan con `process.exitCode`, no con `process.exit()`.
+- Componentes del navegador que cambian de estado después de un `redirect()` a la misma página (por ejemplo
+  `AccionesDespacho`): se les pone `key` con el estado para que no quede abierto el formulario anterior.
+- Filas que dependen del ancho de su caja y no de la pantalla: `@container` en la caja y `@lg:` en los hijos
+  (Tailwind v4). Así se arregló la lista de productos del pedido junto a la columna derecha.
 
 ## Limpieza pendiente (con tu permiso)
 - Archivos de ejemplo de Next.js en `public/` (`next.svg`, `vercel.svg`, `file.svg`, `globe.svg`, `window.svg`).

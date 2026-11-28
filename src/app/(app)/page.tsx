@@ -5,6 +5,7 @@ import {
   CircleDollarSign,
   ClipboardList,
   Disc3,
+  ListTodo,
   Package,
   ShoppingCart,
   TrendingDown,
@@ -15,14 +16,17 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { InsigniaPedido } from "@/components/catalogo/insignias";
+import { FilaTarea } from "@/components/tareas/fila-tarea";
 import { listarCitas } from "@/lib/agenda/datos";
-import { conMayuscula, partesColombia, textoFecha, textoHora } from "@/lib/agenda/fechas";
+import { conMayuscula, hoyColombia, partesColombia, textoFecha, textoHora } from "@/lib/agenda/fechas";
 import { listarPedidos } from "@/lib/catalogo/datos";
 import { pesos } from "@/lib/clientes/opciones";
 import { obtenerUsuarioActual } from "@/lib/sesion";
 import { obtenerResumen, type Indicador } from "@/lib/tablero";
+import { aFilaTarea, listarTareas } from "@/lib/tareas/datos";
 
 const numero = new Intl.NumberFormat("es-CO");
+const MAX_TAREAS = 5;
 
 // Flecha verde si sube, roja si baja, comparado con el mismo tramo del mes anterior
 function Tendencia({ indicador }: { indicador: Indicador }) {
@@ -82,7 +86,8 @@ export default async function Inicio() {
   const usuario = await obtenerUsuarioActual();
   const esAdmin = usuario?.rol === "admin";
   const ahora = Date.now();
-  const [resumen, recientes, { citas: proximas }] = await Promise.all([
+  const hoy = hoyColombia(ahora);
+  const [resumen, recientes, { citas: proximas }, { pendientes: tareasHoy }] = await Promise.all([
     obtenerResumen(),
     listarPedidos({ limite: 5 }),
     // El administrador ve las del equipo; cada vendedor, las suyas
@@ -92,6 +97,8 @@ export default async function Inicio() {
       usuarioId: esAdmin ? undefined : usuario?.id,
       limite: 6,
     }),
+    // Tareas para hoy y vencidas (el administrador ve las del equipo)
+    listarTareas({ usuarioId: esAdmin ? undefined : usuario?.id, hastaFecha: hoy }),
   ]);
   const primerNombre = usuario?.nombre.trim().split(/\s+/)[0];
   const sinVentas = resumen.ventas.actual === 0 && resumen.ventas.anterior === 0;
@@ -102,6 +109,32 @@ export default async function Inicio() {
         {primerNombre ? `Hola, ${primerNombre}` : "Inicio"}
       </h1>
       <p className="mt-2 text-base text-ink-soft">Resumen general · mes en curso {resumen.periodo}</p>
+
+      {tareasHoy.length > 0 && (
+        <section className="mt-6 rounded-xl border border-line p-5">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="flex min-w-0 items-center gap-2 font-semibold">
+              <ListTodo className="size-5 shrink-0 text-brand" aria-hidden />
+              {esAdmin ? "Tareas para hoy (equipo)" : "Tus tareas para hoy"}
+              <span className="rounded-full bg-mist px-2 py-0.5 text-xs text-ink-soft tabular-nums">{tareasHoy.length}</span>
+            </h2>
+            <Link href="/tareas" className="inline-flex min-h-9 shrink-0 items-center text-sm font-semibold whitespace-nowrap text-brand hover:underline">
+              Ver tareas
+            </Link>
+          </div>
+          <ul className="mt-2 divide-y divide-line">
+            {tareasHoy.slice(0, MAX_TAREAS).map((t) => (
+              <FilaTarea key={t.id} tarea={aFilaTarea(t, usuario, esAdmin)} hoy={hoy} />
+            ))}
+          </ul>
+          {tareasHoy.length > MAX_TAREAS && (
+            <p className="mt-1 text-sm text-ink-soft">
+              Y {tareasHoy.length - MAX_TAREAS} más.{" "}
+              <Link href="/tareas" className="font-semibold text-brand hover:underline">Verlas todas</Link>
+            </p>
+          )}
+        </section>
+      )}
 
       {sinVentas && (
         <p className="mt-6 rounded-xl bg-mist px-4 py-3 text-sm text-ink-soft">

@@ -87,7 +87,7 @@ function FilaItem({ pedidoId, item, editable }: { pedidoId: string; item: ItemPe
   const faltaStock = p !== null && item.quantity > p.stock;
 
   return (
-    <li className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
+    <li className="flex flex-col gap-3 py-4 @lg:flex-row @lg:items-center">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Miniatura ruta={p?.photo_url} />
         <div className="min-w-0">
@@ -103,7 +103,7 @@ function FilaItem({ pedidoId, item, editable }: { pedidoId: string; item: ItemPe
           )}
         </div>
       </div>
-      <div className="flex items-center justify-between gap-4 sm:justify-end">
+      <div className="flex items-center justify-between gap-4 @lg:justify-end">
         {editable ? (
           <ControlCantidad pedidoId={pedidoId} item={item} />
         ) : (
@@ -294,23 +294,20 @@ function AccionesEstado({ pedido }: { pedido: PedidoDetalle }) {
           </button>
         </>
       )}
-      {pedido.status === "enviado" && (
+      {/* Enviado: se despacha y se entrega en la sección "Despacho" (al entregarlo queda completado) */}
+      {pedido.status === "enviado" && !pedido.dispatched_at && (
         <>
-          <button
-            type="button"
-            disabled={pendiente}
-            onClick={() => cambiar("completado", "Al completar el pedido se descuentan las cantidades del stock. ¿Continuar?")}
-            className={`${boton} bg-brand text-on-brand hover:bg-brand-dark`}
-          >
-            Marcar como completado
-          </button>
+          <p className="rounded-xl bg-mist px-3 py-2 text-sm">Pedido enviado. Cuando salga, despáchalo en «Despacho», aquí abajo.</p>
           <button type="button" disabled={pendiente} onClick={() => cambiar("borrador")} className={`${boton} border border-line hover:bg-mist`}>
             Volver a borrador para corregir
           </button>
         </>
       )}
+      {pedido.status === "enviado" && pedido.dispatched_at && (
+        <p className="rounded-xl bg-mist px-3 py-2 text-sm">El pedido ya salió. Cuando llegue, márcalo como entregado en «Despacho».</p>
+      )}
       {pedido.status === "completado" && (
-        <p className="rounded-xl bg-ok-soft px-3 py-2 text-sm">Pedido completado. El stock ya se descontó y el pedido no se puede cambiar.</p>
+        <p className="rounded-xl bg-ok-soft px-3 py-2 text-sm">Pedido entregado y completado. El stock ya se descontó y el pedido no se puede cambiar.</p>
       )}
       <Mensaje estado={mensaje} />
     </div>
@@ -340,12 +337,15 @@ export function EditorPedido({
   puedeEditar,
   categorias,
   enviar,
+  despacho,
 }: {
   pedido: PedidoDetalle;
   puedeEditar: boolean;
   categorias: Categoria[];
   /** Sección "Enviar al cliente" (WhatsApp y correo), armada en el servidor */
   enviar?: React.ReactNode;
+  /** Sección "Despacho" (transportadora, guía y entrega), armada en el servidor */
+  despacho?: React.ReactNode;
 }) {
   const editable = puedeEditar && pedido.status === "borrador";
   const unidades = pedido.items.reduce((suma, i) => suma + i.quantity, 0);
@@ -358,7 +358,8 @@ export function EditorPedido({
           {pedido.items.length === 0 ? (
             <p className="mt-3 text-sm text-ink-soft">Todavía no hay productos. {editable ? "Búscalos abajo y agrégalos." : ""}</p>
           ) : (
-            <ul className="mt-2 divide-y divide-line">
+            // "@container": la fila se acomoda según el ancho de esta caja (no de la pantalla)
+            <ul className="@container mt-2 divide-y divide-line">
               {pedido.items.map((item) => (
                 <FilaItem key={item.id} pedidoId={pedido.id} item={item} editable={editable} />
               ))}
@@ -382,6 +383,7 @@ export function EditorPedido({
           {puedeEditar && <div className="mt-4"><AccionesEstado pedido={pedido} /></div>}
           {!puedeEditar && <p className="mt-4 text-xs text-ink-soft">Solo quien creó el pedido o un administrador puede cambiarlo.</p>}
         </section>
+        {despacho}
         {enviar}
         <section className="rounded-xl border border-line p-4 sm:p-5">
           <FormularioNotas pedido={pedido} editable={puedeEditar && pedido.status !== "completado"} />
