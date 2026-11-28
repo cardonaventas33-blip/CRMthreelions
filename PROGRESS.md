@@ -213,6 +213,15 @@ El dueño entró con su usuario administrador en la página publicada (https://c
 - [x] Menú lateral (Inicio · Comercial · Administración) y Agenda con calendario de lunes a sábado.
 - [x] Carpeta `fotos-catalogo/` con 5 fotos de plumillas (no se sube a GitHub).
 
+## Para decidir (28-nov-2026)
+- **Facturación:** hoy el CRM no manda los pedidos a ninguna parte para facturar (el dueño preguntó el 28-nov).
+  Propuesta: paso "Por facturar" (quien factura ve los pedidos enviados, hace la factura electrónica en su programa y
+  anota el número de factura en el CRM). Otra opción: conectar el CRM con el programa de facturación (depende de cuál
+  usen; más trabajo y puede costar).
+- **Copias de seguridad (para la Fase 5):** Supabase está en el plan gratis, que no guarda copias diarias para
+  recuperar (eso es de los planes pagos, desde Pro, unos 25 USD al mes). Las copias de la base tampoco incluyen las
+  fotos ni los documentos. Hacer un respaldo propio gratis (datos + archivos) a una carpeta del computador, o pasar a Pro.
+
 ## Pendiente de tu parte
 - Ponerle la **zona** a las sedes de tus clientes (Norte, Sur…) y marcar con ⭐ los clientes importantes.
 - **Poner precios** (y stock) a los productos que tu equipo vende: sin precio no pueden armar pedidos
